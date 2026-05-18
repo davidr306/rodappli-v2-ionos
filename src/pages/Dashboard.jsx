@@ -1,76 +1,56 @@
-import { useState } from "react";
-
 import Sidebar from "../components/layout/Sidebar";
-import Topbar from "../components/layout/Topbar";
 
-import StatsCard from "../components/dashboard/StatsCard";
-import { useEffect, useState } from "react";
-import { getDashboardStats } from "../services/dashboardService";
 export default function Dashboard() {
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-const [stats, setStats] = useState({
-  interventions: 0,
-  clients: 0,
-  pending: 0,
-});
-
-useEffect(() => {
-
-  async function loadStats() {
-    const data = await getDashboardStats();
-    setStats(data);
-  }
-
-  loadStats();
-
-}, []);
   return (
     <div className="flex min-h-screen bg-gray-100">
 
-      {/* Sidebar desktop */}
-      <div className="hidden md:block">
-        <Sidebar />
-      </div>
+      <Sidebar />
 
-      {/* Sidebar mobile */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 md:hidden">
+      <div className="flex-1 p-10">
 
-          <div className="w-64 bg-gray-900 h-full p-5">
-            <Sidebar />
+        <h1 className="text-4xl font-bold text-black mb-2">
+          Rodappli V2
+        </h1>
+
+        <p className="text-gray-500 mb-8">
+          Gestion des interventions
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <div className="bg-white rounded-2xl shadow p-6">
+            <h2 className="text-gray-500 text-sm">
+              Interventions
+            </h2>
+
+            <p className="text-3xl font-bold text-black mt-2">
+              12
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow p-6">
+            <h2 className="text-gray-500 text-sm">
+              Clients
+            </h2>
+
+            <p className="text-3xl font-bold text-black mt-2">
+              8
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow p-6">
+            <h2 className="text-gray-500 text-sm">
+              Factures
+            </h2>
+
+            <p className="text-3xl font-bold text-black mt-2">
+              5
+            </p>
           </div>
 
         </div>
-      )}
 
-      {/* Main */}
-      <main className="flex-1 p-4 md:p-6">
-
-        <Topbar setSidebarOpen={setSidebarOpen} />
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          <StatsCard
-            title="Interventions"
-            value={stats.interventions}
-          />
-
-          <StatsCard
-            title="Clients"
-            value={stats.clients}
-          />
-
-          <StatsCard
-            title="En attente"
-            value={stats.pending}
-          />
-
-        </div>
-
-      </main>
-
+      </div>
     </div>
   );
 }

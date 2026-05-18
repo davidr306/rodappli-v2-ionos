@@ -1,21 +1,32 @@
 import jsPDF from "jspdf";
 
-export function generatePDF(intervention, signatureBase64) {
+export function generatePDF(intervention) {
   const doc = new jsPDF();
 
-  doc.setFontSize(16);
-  doc.text("BON D'INTERVENTION", 20, 20);
+  doc.setFontSize(22);
+  doc.text("Bon d’intervention", 20, 20);
 
-  doc.setFontSize(12);
-  doc.text(`Client: ${intervention.client}`, 20, 40);
-  doc.text(`Adresse: ${intervention.adresse}`, 20, 50);
-  doc.text(`Travaux: ${intervention.travaux}`, 20, 60);
+  doc.setFontSize(14);
 
-  doc.text("Signature client :", 20, 90);
+  doc.text(
+    `Client : ${intervention.client}`,
+    20,
+    50
+  );
 
-  if (signatureBase64) {
-    doc.addImage(signatureBase64, "PNG", 20, 100, 150, 60);
-  }
+  doc.text(
+    `Description : ${intervention.description}`,
+    20,
+    70
+  );
 
-  doc.save(`intervention_${intervention.client}.pdf`);
+  doc.text(
+    `Date : ${new Date().toLocaleDateString()}`,
+    20,
+    90
+  );
+
+  doc.save(
+    `intervention-${intervention.client}.pdf`
+  );
 }

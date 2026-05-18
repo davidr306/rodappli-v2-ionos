@@ -1,23 +1,22 @@
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../firebase/firebase";
 
 export async function getDashboardStats() {
-
-  const interventionsSnapshot = await getDocs(
+  const interventionsSnap = await getDocs(
     collection(db, "interventions")
   );
 
-  const clientsSnapshot = await getDocs(
+  const clientsSnap = await getDocs(
     collection(db, "clients")
   );
 
-  const pending = interventionsSnapshot.docs.filter(
-    (doc) => doc.data().status === "pending"
+  const facturesSnap = await getDocs(
+    collection(db, "factures")
   );
 
   return {
-    interventions: interventionsSnapshot.size,
-    clients: clientsSnapshot.size,
-    pending: pending.length,
+    interventions: interventionsSnap.size,
+    clients: clientsSnap.size,
+    factures: facturesSnap.size,
   };
 }

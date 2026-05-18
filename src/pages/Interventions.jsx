@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { generatePDF } from "../utils/generatePDF";
 import Sidebar from "../components/layout/Sidebar";
 
 import {
@@ -87,35 +87,46 @@ export default function Interventions() {
 
           <table className="w-full">
 
-            <thead>
-              <tr className="border-b text-left">
-                <th className="pb-4">Client</th>
-                <th className="pb-4">Adresse</th>
-                <th className="pb-4">Statut</th>
-              </tr>
-            </thead>
+  <thead>
+  <tr className="border-b text-left">
+    <th className="pb-4">Client</th>
+    <th className="pb-4">Adresse</th>
+    <th className="pb-4">Statut</th>
+    <th className="pb-4">PDF</th>
+  </tr>
+</thead>
 
-            <tbody>
+<tbody>
+
 
               {interventions.map((item) => (
 
                 <tr key={item.id} className="border-b">
 
-                  <td className="py-4">
-                    {item.client}
-                  </td>
+  <td className="py-4">
+    {item.client}
+  </td>
 
-                  <td>
-                    {item.adresse}
-                  </td>
+  <td>
+    {item.adresse}
+  </td>
 
-                  <td>
-                    <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                      {item.statut}
-                    </span>
-                  </td>
+  <td>
+    <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
+      {item.statut}
+    </span>
+  </td>
 
-                </tr>
+  <td>
+    <button
+      onClick={() => generatePDF(item)}
+      className="bg-green-600 text-white px-4 py-2 rounded-xl"
+    >
+      PDF
+    </button>
+  </td>
+
+</tr>
 
               ))}
 

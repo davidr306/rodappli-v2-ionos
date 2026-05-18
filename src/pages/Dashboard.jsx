@@ -1,56 +1,47 @@
-import Sidebar from "../components/layout/Sidebar";
+import Topbar from "../components/layout/Topbar";
 
 export default function Dashboard() {
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
 
-      <Sidebar />
+    <div className="p-4 md:p-8 bg-gray-100 min-h-screen">
 
-      <div className="flex-1 p-10">
+      <Topbar title="Dashboard" />
 
-        <h1 className="text-4xl font-bold text-black mb-2">
-          Rodappli V2
-        </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-        <p className="text-gray-500 mb-8">
-          Gestion des interventions
-        </p>
+        <div className="bg-blue-600 text-white rounded-2xl shadow p-6">
+          <p>Total interventions</p>
+          <h2 className="text-4xl font-bold mt-3">
+            10
+          </h2>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-green-600 text-white rounded-2xl shadow p-6">
+          <p>Interventions terminées</p>
+          <h2 className="text-4xl font-bold mt-3">
+            8
+          </h2>
+        </div>
 
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h2 className="text-gray-500 text-sm">
-              Interventions
-            </h2>
+        <div className="bg-yellow-500 text-white rounded-2xl shadow p-6">
+          <p>Interventions en cours</p>
+          <h2 className="text-4xl font-bold mt-3">
+            2
+          </h2>
+        </div>
 
-            <p className="text-3xl font-bold text-black mt-2">
-              12
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h2 className="text-gray-500 text-sm">
-              Clients
-            </h2>
-
-            <p className="text-3xl font-bold text-black mt-2">
-              8
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h2 className="text-gray-500 text-sm">
-              Factures
-            </h2>
-
-            <p className="text-3xl font-bold text-black mt-2">
-              5
-            </p>
-          </div>
-
+        <div className="bg-purple-600 text-white rounded-2xl shadow p-6">
+          <p>Clients uniques</p>
+          <h2 className="text-4xl font-bold mt-3">
+            6
+          </h2>
         </div>
 
       </div>
+
     </div>
+
   );
+
 }

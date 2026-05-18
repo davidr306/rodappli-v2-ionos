@@ -13,3 +13,6 @@ export default function App() {
     </BrowserRouter>
   );
 }
+<h1 className="text-4xl font-bold text-blue-500">
+  Rodappli V2
+</h1>

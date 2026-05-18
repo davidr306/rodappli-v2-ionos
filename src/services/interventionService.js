@@ -1,45 +1,22 @@
 import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
+  collection,
+  addDoc,
+  getDocs,
 } from "firebase/firestore";
 
-import { db } from "../firebase/firebase";
+import { db } from "../firebase";
 
-export async function getNextInterventionNumber() {
+const interventionsCollection = collection(db, "interventions");
 
-  const counterRef = doc(
-    db,
-    "counters",
-    "interventions"
-  );
+export async function createIntervention(data) {
+  await addDoc(interventionsCollection, data);
+}
 
-  const counterSnap = await getDoc(counterRef);
+export async function getInterventions() {
+  const snapshot = await getDocs(interventionsCollection);
 
-  // première intervention
-  if (!counterSnap.exists()) {
-
-    await setDoc(counterRef, {
-      lastNumber: 1,
-    });
-
-    return "BI-2026-0001";
-  }
-
-  // incrémentation
-  const lastNumber =
-    counterSnap.data().lastNumber + 1;
-
-  await updateDoc(counterRef, {
-    lastNumber: lastNumber,
-  });
-
-  // format 0001
-  const padded = String(lastNumber).padStart(
-    4,
-    "0"
-  );
-
-  return `BI-2026-${padded}`;
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 }

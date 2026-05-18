@@ -1,78 +1,76 @@
+import { useState } from "react";
+
+import Sidebar from "../components/layout/Sidebar";
+import Topbar from "../components/layout/Topbar";
+
+import StatsCard from "../components/dashboard/StatsCard";
+import { useEffect, useState } from "react";
+import { getDashboardStats } from "../services/dashboardService";
 export default function Dashboard() {
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+const [stats, setStats] = useState({
+  interventions: 0,
+  clients: 0,
+  pending: 0,
+});
+
+useEffect(() => {
+
+  async function loadStats() {
+    const data = await getDashboardStats();
+    setStats(data);
+  }
+
+  loadStats();
+
+}, []);
   return (
     <div className="flex min-h-screen bg-gray-100">
-      
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-5 hidden md:block">
-        <h1 className="text-2xl font-bold mb-10">
-          Rodappli
-        </h1>
 
-        <nav className="flex flex-col gap-4">
-          <a href="#" className="hover:text-blue-400">
-            Dashboard
-          </a>
+      {/* Sidebar desktop */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
 
-          <a href="#" className="hover:text-blue-400">
-            Interventions
-          </a>
+      {/* Sidebar mobile */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 md:hidden">
 
-          <a href="#" className="hover:text-blue-400">
-            Clients
-          </a>
-        </nav>
-      </aside>
+          <div className="w-64 bg-gray-900 h-full p-5">
+            <Sidebar />
+          </div>
+
+        </div>
+      )}
 
       {/* Main */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-4 md:p-6">
 
-        {/* Topbar */}
-        <div className="bg-white rounded-xl shadow p-4 mb-6 flex justify-between items-center">
-          <h2 className="text-2xl font-bold">
-            Tableau de bord
-          </h2>
+        <Topbar setSidebarOpen={setSidebarOpen} />
 
-          <button className="bg-red-500 text-white px-4 py-2 rounded-lg">
-            Déconnexion
-          </button>
-        </div>
-
-        {/* Cards */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              Interventions
-            </h3>
+          <StatsCard
+            title="Interventions"
+            value={stats.interventions}
+          />
 
-            <p className="text-3xl font-bold mt-2">
-              24
-            </p>
-          </div>
+          <StatsCard
+            title="Clients"
+            value={stats.clients}
+          />
 
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              Clients
-            </h3>
-
-            <p className="text-3xl font-bold mt-2">
-              18
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              En attente
-            </h3>
-
-            <p className="text-3xl font-bold mt-2">
-              5
-            </p>
-          </div>
+          <StatsCard
+            title="En attente"
+            value={stats.pending}
+          />
 
         </div>
 
       </main>
+
     </div>
   );
 }

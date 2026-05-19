@@ -1,63 +1,54 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import { db } from "../firebase/firebase";
 
 import {
-  collection,
   addDoc,
-  getDocs,
+  collection,
   deleteDoc,
   doc,
+  getDocs,
 } from "firebase/firestore";
-
-import SignatureCanvas from "react-signature-canvas";
-
-import { generatePDF } from "../utils/generatePDF";
 
 import Topbar from "../components/layout/Topbar";
 
 export default function Interventions() {
 
-  const signatureRef = useRef();
-  const fileInputRef = useRef();
+  const [client, setClient] =
+    useState("");
 
-  const [client, setClient] = useState("");
-  const [adresse, setAdresse] = useState("");
-  const [statut, setStatut] = useState("");
-  const [travaux, setTravaux] = useState("");
-  const [technicien, setTechnicien] = useState("");
-  const [dateIntervention, setDateIntervention] = useState("");
+  const [adresse, setAdresse] =
+    useState("");
 
-  const [photo, setPhoto] = useState(null);
+  const [travaux, setTravaux] =
+    useState("");
 
-  const [interventions, setInterventions] = useState([]);
+  const [interventions,
+    setInterventions] =
+    useState([]);
 
   async function chargerInterventions() {
 
-    try {
-
-      const querySnapshot = await getDocs(
-        collection(db, "interventions")
+    const querySnapshot =
+      await getDocs(
+        collection(
+          db,
+          "interventions"
+        )
       );
 
-      const liste = [];
+    const liste = [];
 
-      querySnapshot.forEach((docItem) => {
+    querySnapshot.forEach((docItem) => {
 
-        liste.push({
-          id: docItem.id,
-          ...docItem.data(),
-        });
-
+      liste.push({
+        id: docItem.id,
+        ...docItem.data(),
       });
 
-      setInterventions(liste);
+    });
 
-    } catch (error) {
-
-      console.error(error);
-
-    }
+    setInterventions(liste);
 
   }
 
@@ -67,84 +58,39 @@ export default function Interventions() {
 
   }, []);
 
-  function supprimerPhotoSelectionnee() {
-
-    setPhoto(null);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-
-  }
-
   async function ajouterIntervention(e) {
 
     e.preventDefault();
 
     try {
 
-      let signatureClient = "";
-
-      if (
-        signatureRef.current &&
-        !signatureRef.current.isEmpty()
-      ) {
-
-        signatureClient =
-          signatureRef.current
-            .getTrimmedCanvas()
-            .toDataURL("image/png");
-
-      }
-
-      const nouvelleIntervention = {
-
-        client: client || "",
-        adresse: adresse || "",
-        statut: statut || "",
-        travaux: travaux || "",
-        technicien: technicien || "",
-        dateIntervention:
-          dateIntervention || "",
-
-        signatureClient,
-
-        photoUrl: "",
-
-      };
-
       await addDoc(
-        collection(db, "interventions"),
-        nouvelleIntervention
-      );
-
-      alert("Intervention ajoutée !");
-
-      setClient("");
-      setAdresse("");
-      setStatut("");
-      setTravaux("");
-      setTechnicien("");
-      setDateIntervention("");
-
-      supprimerPhotoSelectionnee();
-
-      if (signatureRef.current) {
-        signatureRef.current.clear();
-      }
-
-      await chargerInterventions();
-
-    } catch (error) {
-
-      console.error(
-        "Erreur Firestore :",
-        error
+        collection(
+          db,
+          "interventions"
+        ),
+        {
+          client,
+          adresse,
+          travaux,
+        }
       );
 
       alert(
-        "Erreur Firestore - regarde la console"
+        "Intervention ajoutée"
       );
+
+      setClient("");
+      setAdresse("");
+      setTravaux("");
+
+      chargerInterventions();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(error.message);
 
     }
 
@@ -152,274 +98,104 @@ export default function Interventions() {
 
   async function supprimerIntervention(id) {
 
-    const confirmation =
-      window.confirm(
-        "Supprimer cette intervention ?"
-      );
+    await deleteDoc(
+      doc(
+        db,
+        "interventions",
+        id
+      )
+    );
 
-    if (!confirmation) {
-      return;
-    }
-
-    try {
-
-      await deleteDoc(
-        doc(db, "interventions", id)
-      );
-
-      await chargerInterventions();
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
+    chargerInterventions();
 
   }
 
   return (
 
-    <div className="p-4 md:p-8 bg-gray-100 min-h-screen">
+    <div className="p-8 bg-gray-100 min-h-screen">
 
       <Topbar title="Interventions" />
 
       <form
         onSubmit={ajouterIntervention}
-        className="bg-white rounded-2xl shadow p-6 mb-8"
+        className="bg-white p-6 rounded-2xl shadow mb-8"
       >
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          <input
-            type="text"
-            placeholder="Nom du client"
-            value={client}
-            onChange={(e) =>
-              setClient(e.target.value)
-            }
-            className="border rounded-xl p-3"
-          />
-
-          <input
-            type="text"
-            placeholder="Adresse"
-            value={adresse}
-            onChange={(e) =>
-              setAdresse(e.target.value)
-            }
-            className="border rounded-xl p-3"
-          />
-
-          <input
-            type="text"
-            placeholder="Technicien"
-            value={technicien}
-            onChange={(e) =>
-              setTechnicien(e.target.value)
-            }
-            className="border rounded-xl p-3"
-          />
-
-          <input
-            type="date"
-            value={dateIntervention}
-            onChange={(e) =>
-              setDateIntervention(
-                e.target.value
-              )
-            }
-            className="border rounded-xl p-3"
-          />
-
-        </div>
-
-        <textarea
-          placeholder="Travail effectué"
-          value={travaux}
+        <input
+          type="text"
+          placeholder="Client"
+          value={client}
           onChange={(e) =>
-            setTravaux(e.target.value)
+            setClient(
+              e.target.value
+            )
           }
-          className="border rounded-xl p-3 w-full h-32 mt-4"
+          className="border p-3 rounded-xl w-full mb-4"
         />
 
-        <select
-          value={statut}
+        <input
+          type="text"
+          placeholder="Adresse"
+          value={adresse}
           onChange={(e) =>
-            setStatut(e.target.value)
+            setAdresse(
+              e.target.value
+            )
           }
-          className="border rounded-xl p-3 w-full mt-4"
-        >
+          className="border p-3 rounded-xl w-full mb-4"
+        />
 
-          <option value="">
-            Choisir un statut
-          </option>
-
-          <option value="En cours">
-            En cours
-          </option>
-
-          <option value="Terminée">
-            Terminée
-          </option>
-
-        </select>
-
-        {/* PHOTO */}
-
-        <div className="mt-6">
-
-          <p className="font-semibold mb-2">
-            Photo intervention
-          </p>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-
-              const fichier =
-                e.target.files?.[0];
-
-              setPhoto(fichier || null);
-
-            }}
-            className="border rounded-xl p-3 w-full"
-          />
-
-          <div className="mt-4 flex items-center justify-between bg-gray-100 rounded-2xl p-4">
-
-            <div>
-
-              <p className="font-medium">
-
-                {photo
-                  ? photo.name
-                  : "Aucune photo sélectionnée"}
-
-              </p>
-
-              <p className="text-sm text-gray-500">
-
-                {photo
-                  ? "Photo prête"
-                  : "Sélectionnez une photo"}
-
-              </p>
-
-            </div>
-
-            <button
-              type="button"
-              onClick={
-                supprimerPhotoSelectionnee
-              }
-              className="bg-red-600 text-white px-4 py-2 rounded-xl"
-            >
-              Supprimer
-            </button>
-
-          </div>
-
-        </div>
-
-        {/* SIGNATURE */}
-
-        <div className="mt-6">
-
-          <p className="font-semibold mb-2">
-            Signature client
-          </p>
-
-          <div className="border rounded-xl overflow-hidden">
-
-            <SignatureCanvas
-              ref={signatureRef}
-              penColor="black"
-              canvasProps={{
-                className: "w-full h-40",
-              }}
-            />
-
-          </div>
-
-          <button
-            type="button"
-            onClick={() =>
-              signatureRef.current.clear()
-            }
-            className="mt-3 bg-gray-500 text-white px-4 py-2 rounded-xl"
-          >
-            Effacer signature
-          </button>
-
-        </div>
+        <textarea
+          placeholder="Travaux"
+          value={travaux}
+          onChange={(e) =>
+            setTravaux(
+              e.target.value
+            )
+          }
+          className="border p-3 rounded-xl w-full h-32 mb-4"
+        />
 
         <button
           type="submit"
-          className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-xl"
+          className="bg-blue-600 text-white px-6 py-3 rounded-xl"
         >
           Ajouter intervention
         </button>
 
       </form>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
 
         {interventions.map((item) => (
 
           <div
             key={item.id}
-            className="bg-white rounded-2xl shadow p-6"
+            className="bg-white p-6 rounded-2xl shadow"
           >
 
             <h2 className="text-2xl font-bold">
               {item.client}
             </h2>
 
-            <p className="text-gray-500 mt-2">
-              {item.adresse}
-            </p>
-
-            <p className="mt-4">
-              <strong>Technicien :</strong>{" "}
-              {item.technicien}
-            </p>
-
             <p className="mt-2">
-              <strong>Date :</strong>{" "}
-              {item.dateIntervention}
+              {item.adresse}
             </p>
 
             <p className="mt-4 whitespace-pre-wrap">
               {item.travaux}
             </p>
 
-            <div className="flex flex-wrap gap-3 mt-6">
-
-              <button
-                type="button"
-                onClick={() =>
-                  generatePDF(item)
-                }
-                className="bg-green-600 text-white px-4 py-2 rounded-xl"
-              >
-                PDF
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  supprimerIntervention(
-                    item.id
-                  )
-                }
-                className="bg-red-600 text-white px-4 py-2 rounded-xl"
-              >
-                Supprimer
-              </button>
-
-            </div>
+            <button
+              onClick={() =>
+                supprimerIntervention(
+                  item.id
+                )
+              }
+              className="mt-6 bg-red-600 text-white px-4 py-2 rounded-xl"
+            >
+              Supprimer
+            </button>
 
           </div>
 

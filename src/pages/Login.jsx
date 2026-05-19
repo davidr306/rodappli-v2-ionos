@@ -1,27 +1,36 @@
 import { useState } from "react";
 
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
+import {
+  useNavigate,
+} from "react-router-dom";
 
 import { auth } from "../firebase/firebase";
 
-import { useNavigate } from "react-router-dom";
-
 export default function Login() {
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] =
+    useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [password, setPassword] =
+    useState("");
 
-  async function handleLogin(e) {
+  const [loading, setLoading] =
+    useState(false);
+
+  async function connexion(e) {
 
     e.preventDefault();
 
-    setLoading(true);
-
     try {
+
+      setLoading(true);
 
       await signInWithEmailAndPassword(
         auth,
@@ -29,134 +38,136 @@ export default function Login() {
         password
       );
 
-      navigate("/dashboard");
+      navigate("/");
 
     } catch (error) {
 
       console.error(error);
 
-      alert("Email ou mot de passe incorrect");
+      if (
+        error.code ===
+        "auth/invalid-credential"
+      ) {
+
+        alert(
+          "Email ou mot de passe incorrect"
+        );
+
+      } else {
+
+        alert(error.message);
+
+      }
+
+    } finally {
+
+      setLoading(false);
 
     }
-
-    setLoading(false);
 
   }
 
   return (
 
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center p-6">
+    <div className="min-h-screen flex">
 
-      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2">
+      <div className="hidden lg:flex w-1/2 bg-blue-700 text-white flex-col justify-center px-16">
 
-        {/* LEFT */}
+        <h1 className="text-5xl font-bold mb-6">
+          Rodappli
+        </h1>
 
-        <div className="hidden md:flex flex-col justify-center bg-blue-700 text-white p-12">
+        <p className="text-xl opacity-90 leading-relaxed">
 
-          <h1 className="text-5xl font-bold leading-tight">
-            Rodappli
-          </h1>
+          Gestion intelligente des interventions terrain,
+          rapports PDF, signatures clients et suivi technique.
 
-          <p className="mt-6 text-lg text-blue-100 leading-relaxed">
+        </p>
 
-            Gestion professionnelle
-            des interventions terrain,
-            bons d’intervention,
-            signatures clients
-            et suivi technique.
+      </div>
+
+      <div className="flex-1 flex items-center justify-center bg-gray-100 p-8">
+
+        <form
+          onSubmit={connexion}
+          className="bg-white p-10 rounded-3xl shadow-xl w-full max-w-md"
+        >
+
+          <h2 className="text-5xl font-bold mb-3">
+
+            Connexion
+
+          </h2>
+
+          <p className="text-gray-500 mb-10">
+
+            Connectez-vous à votre espace Rodappli
 
           </p>
 
-          <div className="mt-10 space-y-4">
+          <div className="mb-5">
 
-            <div className="bg-blue-600 rounded-2xl p-4">
-              📄 Bons d’intervention PDF
-            </div>
+            <label className="block mb-2 font-medium">
 
-            <div className="bg-blue-600 rounded-2xl p-4">
-              ✍️ Signature client
-            </div>
+              Adresse email
 
-            <div className="bg-blue-600 rounded-2xl p-4">
-              ☁️ Sauvegarde cloud Firebase
-            </div>
+            </label>
 
-          </div>
-
-        </div>
-
-        {/* RIGHT */}
-
-        <div className="p-8 md:p-14 flex flex-col justify-center">
-
-          <div className="mb-10">
-
-            <h2 className="text-4xl font-bold text-gray-800">
-              Connexion
-            </h2>
-
-            <p className="text-gray-500 mt-3">
-              Connectez-vous à votre espace Rodappli
-            </p>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) =>
+                setEmail(
+                  e.target.value
+                )
+              }
+              className="w-full border rounded-2xl p-4"
+              required
+            />
 
           </div>
 
-          <form
-            onSubmit={handleLogin}
-            className="space-y-5"
+          <div className="mb-8">
+
+            <label className="block mb-2 font-medium">
+
+              Mot de passe
+
+            </label>
+
+            <input
+              type="password"
+              value={password}
+              onChange={(e) =>
+                setPassword(
+                  e.target.value
+                )
+              }
+              className="w-full border rounded-2xl p-4"
+              required
+            />
+
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-700 hover:bg-blue-800 text-white p-4 rounded-2xl font-bold text-lg"
           >
 
-            <div>
+            {loading
+              ? "Connexion..."
+              : "Connexion"}
 
-              <label className="block mb-2 font-medium text-gray-700">
-                Adresse email
-              </label>
+          </button>
 
-              <input
-                type="email"
-                placeholder="contact@entreprise.fr"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          <p className="text-center text-gray-400 text-sm mt-8">
 
-            </div>
-
-            <div>
-
-              <label className="block mb-2 font-medium text-gray-700">
-                Mot de passe
-              </label>
-
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-semibold text-lg transition"
-            >
-
-              {loading
-                ? "Connexion..."
-                : "Se connecter"}
-
-            </button>
-
-          </form>
-
-          <p className="text-center text-gray-400 text-sm mt-10">
             © Rodappli — Gestion d’interventions
+
           </p>
 
-        </div>
+        </form>
 
       </div>
 

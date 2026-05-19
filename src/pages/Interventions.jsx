@@ -7,7 +7,6 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  updateDoc,
   doc,
 } from "firebase/firestore";
 
@@ -26,6 +25,7 @@ import Topbar from "../components/layout/Topbar";
 export default function Interventions() {
 
   const signatureRef = useRef();
+  const fileInputRef = useRef();
 
   const [client, setClient] = useState("");
   const [adresse, setAdresse] = useState("");
@@ -35,11 +35,6 @@ export default function Interventions() {
   const [dateIntervention, setDateIntervention] = useState("");
 
   const [photo, setPhoto] = useState(null);
-
-  const [recherche, setRecherche] = useState("");
-
-  const [modeEdition, setModeEdition] = useState(false);
-  const [interventionId, setInterventionId] = useState(null);
 
   const [interventions, setInterventions] = useState([]);
 
@@ -73,16 +68,18 @@ export default function Interventions() {
   }
 
   useEffect(() => {
+
     chargerInterventions();
+
   }, []);
 
   async function uploadPhoto() {
 
-    if (!photo) {
-      return "";
-    }
-
     try {
+
+      if (!photo) {
+        return "";
+      }
 
       const storageRef = ref(
         storage,
@@ -101,10 +98,23 @@ export default function Interventions() {
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Erreur upload photo :",
+        error
+      );
 
       return "";
 
+    }
+
+  }
+
+  function supprimerPhotoSelectionnee() {
+
+    setPhoto(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
 
   }
@@ -113,57 +123,44 @@ export default function Interventions() {
 
     e.preventDefault();
 
-    let signatureClient = "";
-
-    if (
-      signatureRef.current &&
-      !signatureRef.current.isEmpty()
-    ) {
-
-      signatureClient =
-        signatureRef.current
-          .getTrimmedCanvas()
-          .toDataURL("image/png");
-
-    }
-
-    const photoUrl =
-      await uploadPhoto();
-
-    const nouvelleIntervention = {
-      client,
-      adresse,
-      statut,
-      travaux,
-      technicien,
-      dateIntervention,
-      signatureClient,
-      photoUrl,
-    };
-
     try {
 
-      if (modeEdition) {
+      let signatureClient = "";
 
-        await updateDoc(
-          doc(db, "interventions", interventionId),
-          nouvelleIntervention
-        );
+      if (
+        signatureRef.current &&
+        !signatureRef.current.isEmpty()
+      ) {
 
-        alert("Intervention modifiée !");
-
-      } else {
-
-        await addDoc(
-          collection(db, "interventions"),
-          nouvelleIntervention
-        );
-
-        alert("Intervention ajoutée !");
+        signatureClient =
+          signatureRef.current
+            .getTrimmedCanvas()
+            .toDataURL("image/png");
 
       }
 
-      await chargerInterventions();
+      const photoUrl =
+        await uploadPhoto();
+
+      const nouvelleIntervention = {
+
+        client,
+        adresse,
+        statut,
+        travaux,
+        technicien,
+        dateIntervention,
+        signatureClient,
+        photoUrl,
+
+      };
+
+      await addDoc(
+        collection(db, "interventions"),
+        nouvelleIntervention
+      );
+
+      alert("Intervention ajoutée !");
 
       setClient("");
       setAdresse("");
@@ -172,20 +169,24 @@ export default function Interventions() {
       setTechnicien("");
       setDateIntervention("");
 
-      setPhoto(null);
+      supprimerPhotoSelectionnee();
 
       if (signatureRef.current) {
         signatureRef.current.clear();
       }
 
-      setModeEdition(false);
-      setInterventionId(null);
+      await chargerInterventions();
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Erreur ajout intervention :",
+        error
+      );
 
-      alert("Erreur Firebase");
+      alert(
+        "Erreur ajout intervention"
+      );
 
     }
 
@@ -193,9 +194,10 @@ export default function Interventions() {
 
   async function supprimerIntervention(id) {
 
-    const confirmation = window.confirm(
-      "Êtes-vous sûr de vouloir supprimer cette intervention ?"
-    );
+    const confirmation =
+      window.confirm(
+        "Supprimer cette intervention ?"
+      );
 
     if (!confirmation) {
       return;
@@ -217,30 +219,11 @@ export default function Interventions() {
 
   }
 
-  const interventionsFiltrees =
-    interventions.filter((item) =>
-      item.client
-        ?.toLowerCase()
-        .includes(recherche.toLowerCase())
-    );
-
   return (
 
     <div className="p-4 md:p-8 bg-gray-100 min-h-screen">
 
       <Topbar title="Interventions" />
-
-      <div className="mb-6">
-
-        <input
-          type="text"
-          placeholder="Rechercher un client..."
-          value={recherche}
-          onChange={(e) => setRecherche(e.target.value)}
-          className="border rounded-xl p-3 w-full md:w-80 bg-white"
-        />
-
-      </div>
 
       <form
         onSubmit={ajouterIntervention}
@@ -276,7 +259,9 @@ export default function Interventions() {
           <input
             type="date"
             value={dateIntervention}
-            onChange={(e) => setDateIntervention(e.target.value)}
+            onChange={(e) =>
+              setDateIntervention(e.target.value)
+            }
             className="border rounded-xl p-3"
           />
 
@@ -287,7 +272,7 @@ export default function Interventions() {
           value={travaux}
           onChange={(e) => setTravaux(e.target.value)}
           className="border rounded-xl p-3 w-full h-32 mt-4"
-        ></textarea>
+        />
 
         <select
           value={statut}
@@ -318,13 +303,51 @@ export default function Interventions() {
           </p>
 
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              setPhoto(e.target.files[0])
-            }
+            onChange={(e) => {
+
+              const fichier =
+                e.target.files?.[0];
+
+              setPhoto(fichier || null);
+
+            }}
             className="border rounded-xl p-3 w-full"
           />
+
+          <div className="mt-4 flex items-center justify-between bg-gray-100 rounded-2xl p-4">
+
+            <div>
+
+              <p className="font-medium">
+
+                {photo
+                  ? photo.name
+                  : "Aucune photo sélectionnée"}
+
+              </p>
+
+              <p className="text-sm text-gray-500">
+
+                {photo
+                  ? "Photo prête à être envoyée"
+                  : "Sélectionnez une photo"}
+
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              onClick={supprimerPhotoSelectionnee}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
+            >
+              Supprimer
+            </button>
+
+          </div>
 
         </div>
 
@@ -336,7 +359,7 @@ export default function Interventions() {
             Signature client
           </p>
 
-          <div className="border rounded-xl bg-white overflow-hidden">
+          <div className="border rounded-xl overflow-hidden">
 
             <SignatureCanvas
               ref={signatureRef}
@@ -347,6 +370,16 @@ export default function Interventions() {
             />
 
           </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              signatureRef.current.clear()
+            }
+            className="mt-3 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-xl"
+          >
+            Effacer signature
+          </button>
 
         </div>
 
@@ -361,7 +394,7 @@ export default function Interventions() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-        {interventionsFiltrees.map((item) => (
+        {interventions.map((item) => (
 
           <div
             key={item.id}
@@ -412,7 +445,9 @@ export default function Interventions() {
 
               <button
                 type="button"
-                onClick={() => supprimerIntervention(item.id)}
+                onClick={() =>
+                  supprimerIntervention(item.id)
+                }
                 className="bg-red-600 text-white px-4 py-2 rounded-xl"
               >
                 Supprimer

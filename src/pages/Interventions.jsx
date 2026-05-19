@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { db, storage } from "../firebase/firebase";
+import { db } from "../firebase/firebase";
 
 import {
   collection,
@@ -9,12 +9,6 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
 
 import SignatureCanvas from "react-signature-canvas";
 
@@ -73,42 +67,6 @@ export default function Interventions() {
 
   }, []);
 
-  async function uploadPhoto() {
-
-    try {
-
-      if (!photo) {
-        return "";
-      }
-
-      const storageRef = ref(
-        storage,
-        `interventions/${Date.now()}-${photo.name}`
-      );
-
-      await uploadBytes(
-        storageRef,
-        photo
-      );
-
-      const url =
-        await getDownloadURL(storageRef);
-
-      return url;
-
-    } catch (error) {
-
-      console.error(
-        "Erreur upload photo :",
-        error
-      );
-
-      return "";
-
-    }
-
-  }
-
   function supprimerPhotoSelectionnee() {
 
     setPhoto(null);
@@ -139,19 +97,19 @@ export default function Interventions() {
 
       }
 
-      const photoUrl =
-        await uploadPhoto();
-
       const nouvelleIntervention = {
 
-        client,
-        adresse,
-        statut,
-        travaux,
-        technicien,
-        dateIntervention,
+        client: client || "",
+        adresse: adresse || "",
+        statut: statut || "",
+        travaux: travaux || "",
+        technicien: technicien || "",
+        dateIntervention:
+          dateIntervention || "",
+
         signatureClient,
-        photoUrl,
+
+        photoUrl: "",
 
       };
 
@@ -180,12 +138,12 @@ export default function Interventions() {
     } catch (error) {
 
       console.error(
-        "Erreur ajout intervention :",
+        "Erreur Firestore :",
         error
       );
 
       alert(
-        "Erreur ajout intervention"
+        "Erreur Firestore - regarde la console"
       );
 
     }
@@ -236,7 +194,9 @@ export default function Interventions() {
             type="text"
             placeholder="Nom du client"
             value={client}
-            onChange={(e) => setClient(e.target.value)}
+            onChange={(e) =>
+              setClient(e.target.value)
+            }
             className="border rounded-xl p-3"
           />
 
@@ -244,7 +204,9 @@ export default function Interventions() {
             type="text"
             placeholder="Adresse"
             value={adresse}
-            onChange={(e) => setAdresse(e.target.value)}
+            onChange={(e) =>
+              setAdresse(e.target.value)
+            }
             className="border rounded-xl p-3"
           />
 
@@ -252,7 +214,9 @@ export default function Interventions() {
             type="text"
             placeholder="Technicien"
             value={technicien}
-            onChange={(e) => setTechnicien(e.target.value)}
+            onChange={(e) =>
+              setTechnicien(e.target.value)
+            }
             className="border rounded-xl p-3"
           />
 
@@ -260,7 +224,9 @@ export default function Interventions() {
             type="date"
             value={dateIntervention}
             onChange={(e) =>
-              setDateIntervention(e.target.value)
+              setDateIntervention(
+                e.target.value
+              )
             }
             className="border rounded-xl p-3"
           />
@@ -270,13 +236,17 @@ export default function Interventions() {
         <textarea
           placeholder="Travail effectué"
           value={travaux}
-          onChange={(e) => setTravaux(e.target.value)}
+          onChange={(e) =>
+            setTravaux(e.target.value)
+          }
           className="border rounded-xl p-3 w-full h-32 mt-4"
         />
 
         <select
           value={statut}
-          onChange={(e) => setStatut(e.target.value)}
+          onChange={(e) =>
+            setStatut(e.target.value)
+          }
           className="border rounded-xl p-3 w-full mt-4"
         >
 
@@ -332,7 +302,7 @@ export default function Interventions() {
               <p className="text-sm text-gray-500">
 
                 {photo
-                  ? "Photo prête à être envoyée"
+                  ? "Photo prête"
                   : "Sélectionnez une photo"}
 
               </p>
@@ -341,8 +311,10 @@ export default function Interventions() {
 
             <button
               type="button"
-              onClick={supprimerPhotoSelectionnee}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
+              onClick={
+                supprimerPhotoSelectionnee
+              }
+              className="bg-red-600 text-white px-4 py-2 rounded-xl"
             >
               Supprimer
             </button>
@@ -376,7 +348,7 @@ export default function Interventions() {
             onClick={() =>
               signatureRef.current.clear()
             }
-            className="mt-3 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-xl"
+            className="mt-3 bg-gray-500 text-white px-4 py-2 rounded-xl"
           >
             Effacer signature
           </button>
@@ -385,7 +357,7 @@ export default function Interventions() {
 
         <button
           type="submit"
-          className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+          className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-xl"
         >
           Ajouter intervention
         </button>
@@ -423,21 +395,13 @@ export default function Interventions() {
               {item.travaux}
             </p>
 
-            {item.photoUrl && (
-
-              <img
-                src={item.photoUrl}
-                alt="intervention"
-                className="w-full h-52 object-cover rounded-2xl mt-5"
-              />
-
-            )}
-
             <div className="flex flex-wrap gap-3 mt-6">
 
               <button
                 type="button"
-                onClick={() => generatePDF(item)}
+                onClick={() =>
+                  generatePDF(item)
+                }
                 className="bg-green-600 text-white px-4 py-2 rounded-xl"
               >
                 PDF
@@ -446,7 +410,9 @@ export default function Interventions() {
               <button
                 type="button"
                 onClick={() =>
-                  supprimerIntervention(item.id)
+                  supprimerIntervention(
+                    item.id
+                  )
                 }
                 className="bg-red-600 text-white px-4 py-2 rounded-xl"
               >

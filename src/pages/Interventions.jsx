@@ -65,6 +65,14 @@ export default function Interventions() {
     setInterventionId] =
     useState(null);
 
+  const [recherche,
+    setRecherche] =
+    useState("");
+
+  const [filtreStatut,
+    setFiltreStatut] =
+    useState("");
+
   async function chargerInterventions() {
 
     try {
@@ -182,8 +190,18 @@ export default function Interventions() {
 
     try {
 
-      const photoUrl =
-        await uploadPhoto();
+      let photoUrl = "";
+
+      try {
+
+        photoUrl =
+          await uploadPhoto();
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
 
       let signatureClient = "";
 
@@ -562,101 +580,183 @@ export default function Interventions() {
 
       </form>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {/* RECHERCHE */}
 
-        {interventions.map((item) => (
+      <div className="bg-white p-6 rounded-2xl shadow mb-8">
 
-          <div
-            key={item.id}
-            className="bg-white p-6 rounded-2xl shadow"
+        <h2 className="text-2xl font-bold mb-6">
+          Recherche
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-4">
+
+          <input
+            type="text"
+            placeholder="Rechercher client ou adresse"
+            value={recherche}
+            onChange={(e) =>
+              setRecherche(
+                e.target.value
+              )
+            }
+            className="border p-3 rounded-xl"
+          />
+
+          <select
+            value={filtreStatut}
+            onChange={(e) =>
+              setFiltreStatut(
+                e.target.value
+              )
+            }
+            className="border p-3 rounded-xl"
           >
 
-            {item.photoUrl && (
+            <option value="">
+              Tous les statuts
+            </option>
 
-              <img
-                src={item.photoUrl}
-                alt="intervention"
-                className="w-full h-52 object-cover rounded-2xl mb-4"
-              />
+            <option value="En cours">
+              En cours
+            </option>
 
-            )}
+            <option value="Terminée">
+              Terminée
+            </option>
 
-            <h2 className="text-2xl font-bold">
-              {item.client}
-            </h2>
+          </select>
 
-            <p className="text-gray-500 mt-2">
-              {item.adresse}
-            </p>
+        </div>
 
-            <p className="mt-4">
-              <strong>Technicien :</strong>{" "}
-              {item.technicien}
-            </p>
+      </div>
 
-            <p className="mt-2">
-              <strong>Date :</strong>{" "}
-              {item.dateIntervention}
-            </p>
+      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-            <p className="mt-4">
-              <strong>Statut :</strong>{" "}
-              {item.statut}
-            </p>
+        {interventions
 
-            <p className="mt-4 whitespace-pre-wrap">
-              {item.travaux}
-            </p>
+          .filter((item) => {
 
-            {item.signatureClient && (
+            const matchRecherche =
 
-              <div className="mt-4">
+              item.client
+                ?.toLowerCase()
+                .includes(
+                  recherche.toLowerCase()
+                ) ||
 
-                <p className="font-semibold mb-2">
-                  Signature client
-                </p>
+              item.adresse
+                ?.toLowerCase()
+                .includes(
+                  recherche.toLowerCase()
+                );
+
+            const matchStatut =
+
+              filtreStatut === "" ||
+
+              item.statut ===
+                filtreStatut;
+
+            return (
+              matchRecherche &&
+              matchStatut
+            );
+
+          })
+
+          .map((item) => (
+
+            <div
+              key={item.id}
+              className="bg-white p-6 rounded-2xl shadow"
+            >
+
+              {item.photoUrl && (
 
                 <img
-                  src={item.signatureClient}
-                  alt="signature"
-                  className="border rounded-xl bg-white"
+                  src={item.photoUrl}
+                  alt="intervention"
+                  className="w-full h-52 object-cover rounded-2xl mb-4"
                 />
+
+              )}
+
+              <h2 className="text-2xl font-bold">
+                {item.client}
+              </h2>
+
+              <p className="text-gray-500 mt-2">
+                {item.adresse}
+              </p>
+
+              <p className="mt-4">
+                <strong>Technicien :</strong>{" "}
+                {item.technicien}
+              </p>
+
+              <p className="mt-2">
+                <strong>Date :</strong>{" "}
+                {item.dateIntervention}
+              </p>
+
+              <p className="mt-4">
+                <strong>Statut :</strong>{" "}
+                {item.statut}
+              </p>
+
+              <p className="mt-4 whitespace-pre-wrap">
+                {item.travaux}
+              </p>
+
+              {item.signatureClient && (
+
+                <div className="mt-4">
+
+                  <p className="font-semibold mb-2">
+                    Signature client
+                  </p>
+
+                  <img
+                    src={item.signatureClient}
+                    alt="signature"
+                    className="border rounded-xl bg-white"
+                  />
+
+                </div>
+
+              )}
+
+              <div className="flex gap-3 mt-6">
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    modifierIntervention(
+                      item
+                    )
+                  }
+                  className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+                >
+                  Modifier
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    supprimerIntervention(
+                      item.id
+                    )
+                  }
+                  className="bg-red-600 text-white px-4 py-2 rounded-xl"
+                >
+                  Supprimer
+                </button>
 
               </div>
 
-            )}
-
-            <div className="flex gap-3 mt-6">
-
-              <button
-                type="button"
-                onClick={() =>
-                  modifierIntervention(
-                    item
-                  )
-                }
-                className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
-              >
-                Modifier
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  supprimerIntervention(
-                    item.id
-                  )
-                }
-                className="bg-red-600 text-white px-4 py-2 rounded-xl"
-              >
-                Supprimer
-              </button>
-
             </div>
 
-          </div>
-
-        ))}
+          ))}
 
       </div>
 

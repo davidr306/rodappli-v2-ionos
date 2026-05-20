@@ -136,50 +136,29 @@ export default function Interventions() {
 
       let signatureClient = "";
 
-      try {
+      if (
+        signatureRef.current &&
+        !signatureRef.current.isEmpty()
+      ) {
 
-        if (
-          signatureRef.current &&
-          !signatureRef.current.isEmpty()
-        ) {
-
-          signatureClient =
-            signatureRef.current
-              .getCanvas()
-              .toDataURL(
-                "image/png"
-              );
-
-        }
-
-      } catch (error) {
-
-        console.error(error);
+        signatureClient =
+          signatureRef.current
+            .getCanvas()
+            .toDataURL(
+              "image/png"
+            );
 
       }
 
       const data = {
 
-        client:
-          client || "",
-
-        adresse:
-          adresse || "",
-
-        travaux:
-          travaux || "",
-
-        technicien:
-          technicien || "",
-
-        statut:
-          statut || "",
-
-        dateIntervention:
-          dateIntervention || "",
-
-        signatureClient:
-          signatureClient || "",
+        client,
+        adresse,
+        travaux,
+        technicien,
+        statut,
+        dateIntervention,
+        signatureClient,
 
       };
 
@@ -222,7 +201,7 @@ export default function Interventions() {
 
       viderFormulaire();
 
-      await chargerInterventions();
+      chargerInterventions();
 
     } catch (error) {
 
@@ -287,16 +266,18 @@ export default function Interventions() {
 
   return (
 
-    <div className="p-8 bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gray-100 p-3 md:p-8">
 
       <Topbar title="Interventions" />
 
+      {/* FORMULAIRE */}
+
       <form
         onSubmit={ajouterIntervention}
-        className="bg-white p-6 rounded-2xl shadow mb-8"
+        className="bg-white rounded-3xl shadow-lg p-4 md:p-8 mb-6"
       >
 
-        <h2 className="text-2xl font-bold mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">
 
           {modeEdition
             ? "Modifier intervention"
@@ -304,7 +285,7 @@ export default function Interventions() {
 
         </h2>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <input
             type="text"
@@ -315,7 +296,7 @@ export default function Interventions() {
                 e.target.value
               )
             }
-            className="border p-3 rounded-xl"
+            className="border p-4 rounded-2xl text-base"
           />
 
           <input
@@ -327,7 +308,7 @@ export default function Interventions() {
                 e.target.value
               )
             }
-            className="border p-3 rounded-xl"
+            className="border p-4 rounded-2xl text-base"
           />
 
           <input
@@ -339,7 +320,7 @@ export default function Interventions() {
                 e.target.value
               )
             }
-            className="border p-3 rounded-xl"
+            className="border p-4 rounded-2xl text-base"
           />
 
           <input
@@ -350,7 +331,7 @@ export default function Interventions() {
                 e.target.value
               )
             }
-            className="border p-3 rounded-xl"
+            className="border p-4 rounded-2xl text-base"
           />
 
         </div>
@@ -363,7 +344,7 @@ export default function Interventions() {
               e.target.value
             )
           }
-          className="border p-3 rounded-xl w-full h-32 mt-4"
+          className="border p-4 rounded-2xl w-full h-32 mt-4 text-base"
         />
 
         <select
@@ -373,7 +354,7 @@ export default function Interventions() {
               e.target.value
             )
           }
-          className="border p-3 rounded-xl w-full mt-4"
+          className="border p-4 rounded-2xl w-full mt-4 text-base"
         >
 
           <option value="">
@@ -390,47 +371,47 @@ export default function Interventions() {
 
         </select>
 
+        {/* SIGNATURE */}
+
         <div className="mt-6">
 
-          <p className="font-semibold mb-2">
+          <p className="font-semibold mb-3 text-lg">
             Signature client
           </p>
 
-          <div className="border rounded-xl inline-block overflow-hidden bg-white">
+          <div className="bg-white border rounded-2xl overflow-hidden w-full max-w-full">
 
             <SignatureCanvas
               ref={signatureRef}
               penColor="black"
               canvasProps={{
-                width: 350,
-                height: 100,
-                className: "border",
+                width: 320,
+                height: 120,
+                className: "w-full",
               }}
             />
 
           </div>
 
-          <div>
-
-            <button
-              type="button"
-              onClick={() =>
-                signatureRef.current?.clear()
-              }
-              className="mt-3 bg-gray-500 text-white px-4 py-2 rounded-xl"
-            >
-              Effacer signature
-            </button>
-
-          </div>
+          <button
+            type="button"
+            onClick={() =>
+              signatureRef.current?.clear()
+            }
+            className="mt-4 bg-gray-500 text-white px-5 py-3 rounded-2xl text-sm md:text-base"
+          >
+            Effacer signature
+          </button>
 
         </div>
 
-        <div className="flex gap-4 mt-6">
+        {/* BOUTONS */}
+
+        <div className="flex flex-col md:flex-row gap-4 mt-8">
 
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-2xl text-base md:text-lg font-semibold w-full md:w-auto"
           >
 
             {modeEdition
@@ -444,7 +425,7 @@ export default function Interventions() {
             <button
               type="button"
               onClick={viderFormulaire}
-              className="bg-gray-500 text-white px-6 py-3 rounded-xl"
+              className="bg-gray-500 text-white px-6 py-4 rounded-2xl text-base md:text-lg font-semibold w-full md:w-auto"
             >
               Annuler
             </button>
@@ -455,13 +436,17 @@ export default function Interventions() {
 
       </form>
 
-      <div className="bg-white p-6 rounded-2xl shadow mb-8">
+      {/* RECHERCHE */}
 
-        <h2 className="text-2xl font-bold mb-6">
+      <div className="bg-white rounded-3xl shadow-lg p-4 md:p-6 mb-6">
+
+        <h2 className="text-2xl font-bold mb-5">
+
           Recherche
+
         </h2>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <input
             type="text"
@@ -472,7 +457,7 @@ export default function Interventions() {
                 e.target.value
               )
             }
-            className="border p-3 rounded-xl"
+            className="border p-4 rounded-2xl"
           />
 
           <select
@@ -482,7 +467,7 @@ export default function Interventions() {
                 e.target.value
               )
             }
-            className="border p-3 rounded-xl"
+            className="border p-4 rounded-2xl"
           >
 
             <option value="">
@@ -503,7 +488,9 @@ export default function Interventions() {
 
       </div>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {/* CARTES */}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
 
         {interventions
 
@@ -541,62 +528,80 @@ export default function Interventions() {
 
             <div
               key={item.id}
-              className="bg-white p-6 rounded-2xl shadow"
+              className="bg-white rounded-3xl shadow-lg p-5"
             >
 
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-2xl font-bold break-words">
+
                 {item.client}
+
               </h2>
 
-              <p className="text-gray-500 mt-2">
+              <p className="text-gray-500 mt-2 break-words">
+
                 {item.adresse}
+
               </p>
 
-              <p className="mt-4">
-                <strong>Technicien :</strong>{" "}
-                {item.technicien}
-              </p>
+              <div className="mt-5 space-y-2 text-sm md:text-base">
 
-              <p className="mt-2">
-                <strong>Date :</strong>{" "}
-                {item.dateIntervention}
-              </p>
+                <p>
+                  <strong>
+                    Technicien :
+                  </strong>{" "}
+                  {item.technicien}
+                </p>
 
-              <p className="mt-4">
-                <strong>Statut :</strong>{" "}
-                {item.statut}
-              </p>
+                <p>
+                  <strong>
+                    Date :
+                  </strong>{" "}
+                  {item.dateIntervention}
+                </p>
 
-              <p className="mt-4 whitespace-pre-wrap">
+                <p>
+                  <strong>
+                    Statut :
+                  </strong>{" "}
+                  {item.statut}
+                </p>
+
+              </div>
+
+              <p className="mt-5 whitespace-pre-wrap text-sm md:text-base">
+
                 {item.travaux}
+
               </p>
 
               {item.signatureClient && (
 
-                <div className="mt-4">
+                <div className="mt-5">
 
                   <p className="font-semibold mb-2">
+
                     Signature client
+
                   </p>
 
                   <img
                     src={item.signatureClient}
                     alt="signature"
-                    className="border rounded-xl bg-white"
+                    className="border rounded-2xl bg-white w-full"
                   />
 
                 </div>
 
               )}
 
-              <div className="flex flex-wrap gap-3 mt-6">
+              <div className="flex flex-col md:flex-row gap-3 mt-6">
 
                 <button
                   type="button"
                   onClick={() =>
                     generatePDF(item)
                   }
-                  className="bg-green-600 text-white px-4 py-2 rounded-xl"
+                  className="bg-green-600 text-white px-4 py-3 rounded-2xl w-full"
                 >
                   PDF
                 </button>
@@ -608,7 +613,7 @@ export default function Interventions() {
                       item
                     )
                   }
-                  className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+                  className="bg-yellow-500 text-white px-4 py-3 rounded-2xl w-full"
                 >
                   Modifier
                 </button>
@@ -620,7 +625,7 @@ export default function Interventions() {
                       item.id
                     )
                   }
-                  className="bg-red-600 text-white px-4 py-2 rounded-xl"
+                  className="bg-red-600 text-white px-4 py-3 rounded-2xl w-full"
                 >
                   Supprimer
                 </button>

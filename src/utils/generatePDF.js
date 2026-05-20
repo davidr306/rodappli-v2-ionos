@@ -1,121 +1,43 @@
 import jsPDF from "jspdf";
 
+import logo from "../assets/logo.png";
+
 export async function generatePDF(
   intervention
 ) {
 
-  const pdf = new jsPDF();
+  try {
 
-  pdf.setFontSize(22);
+    const pdf = new jsPDF();
 
-  pdf.text(
-    "RAPPORT D'INTERVENTION",
-    20,
-    20
-  );
+    // FOND HEADER
 
-  pdf.setFontSize(12);
-
-  pdf.text(
-    `Client : ${intervention.client}`,
-    20,
-    40
-  );
-
-  pdf.text(
-    `Adresse : ${intervention.adresse}`,
-    20,
-    50
-  );
-
-  pdf.text(
-    `Technicien : ${intervention.technicien}`,
-    20,
-    60
-  );
-
-  pdf.text(
-    `Date : ${intervention.dateIntervention}`,
-    20,
-    70
-  );
-
-  pdf.text(
-    `Statut : ${intervention.statut}`,
-    20,
-    80
-  );
-
-  pdf.text(
-    "Travaux effectués :",
-    20,
-    100
-  );
-
-  const texte =
-    pdf.splitTextToSize(
-      intervention.travaux || "",
-      170
+    pdf.setFillColor(
+      17,
+      24,
+      39
     );
 
-  pdf.text(
-    texte,
-    20,
-    110
-  );
+    pdf.rect(
+      0,
+      0,
+      210,
+      35,
+      "F"
+    );
 
-  let currentY = 140;
-
-  // PHOTO
-
-  if (intervention.photoUrl) {
+    // LOGO
 
     try {
 
-      const response =
-        await fetch(
-          intervention.photoUrl
-        );
-
-      const blob =
-        await response.blob();
-
-      const reader =
-        new FileReader();
-
-      const base64 =
-        await new Promise(
-          (resolve) => {
-
-            reader.onloadend =
-              () =>
-                resolve(
-                  reader.result
-                );
-
-            reader.readAsDataURL(
-              blob
-            );
-
-          }
-        );
-
-      pdf.text(
-        "Photo intervention :",
-        20,
-        currentY
-      );
-
       pdf.addImage(
-        base64,
-        "JPEG",
-        20,
-        currentY + 10,
-        80,
-        60
+        logo,
+        "PNG",
+        15,
+        7,
+        22,
+        22
       );
-
-      currentY += 80;
 
     } catch (error) {
 
@@ -123,33 +45,254 @@ export async function generatePDF(
 
     }
 
-  }
+    // TITRE
 
-  // SIGNATURE
+    pdf.setTextColor(
+      255,
+      255,
+      255
+    );
 
-  if (
-    intervention.signatureClient
-  ) {
+    pdf.setFontSize(24);
 
     pdf.text(
-      "Signature client :",
-      20,
-      currentY
+      "RAPPORT D'INTERVENTION",
+      50,
+      22
     );
 
-    pdf.addImage(
-      intervention.signatureClient,
-      "PNG",
+    // RESET COULEUR
+
+    pdf.setTextColor(
+      0,
+      0,
+      0
+    );
+
+    // CARTE INFOS
+
+    pdf.setFillColor(
+      245,
+      245,
+      245
+    );
+
+    pdf.roundedRect(
+      15,
+      45,
+      180,
+      55,
+      4,
+      4,
+      "F"
+    );
+
+    pdf.setFontSize(12);
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+    pdf.text(
+      "Client :",
+      22,
+      58
+    );
+
+    pdf.text(
+      "Adresse :",
+      22,
+      70
+    );
+
+    pdf.text(
+      "Technicien :",
+      22,
+      82
+    );
+
+    pdf.text(
+      "Date :",
+      22,
+      94
+    );
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+    pdf.text(
+      intervention.client || "",
+      60,
+      58
+    );
+
+    pdf.text(
+      intervention.adresse || "",
+      60,
+      70
+    );
+
+    pdf.text(
+      intervention.technicien || "",
+      60,
+      82
+    );
+
+    pdf.text(
+      intervention.dateIntervention || "",
+      60,
+      94
+    );
+
+    // STATUT
+
+    pdf.setFillColor(
+      37,
+      99,
+      235
+    );
+
+    pdf.roundedRect(
+      140,
+      108,
+      55,
+      12,
+      3,
+      3,
+      "F"
+    );
+
+    pdf.setTextColor(
+      255,
+      255,
+      255
+    );
+
+    pdf.setFontSize(11);
+
+    pdf.text(
+      intervention.statut || "",
+      158,
+      116,
+      {
+        align: "center",
+      }
+    );
+
+    pdf.setTextColor(
+      0,
+      0,
+      0
+    );
+
+    // TRAVAUX
+
+    pdf.setFontSize(16);
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+    pdf.text(
+      "Travaux effectués",
       20,
-      currentY + 10,
-      80,
-      30
+      140
+    );
+
+    pdf.setFontSize(12);
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+    const texte =
+      pdf.splitTextToSize(
+        intervention.travaux || "",
+        170
+      );
+
+    pdf.text(
+      texte,
+      20,
+      152
+    );
+
+    // SIGNATURE
+
+    if (
+      intervention.signatureClient
+    ) {
+
+      pdf.setFontSize(16);
+
+      pdf.setFont(
+        "helvetica",
+        "bold"
+      );
+
+      pdf.text(
+        "Signature client",
+        20,
+        230
+      );
+
+      pdf.addImage(
+        intervention.signatureClient,
+        "PNG",
+        20,
+        240,
+        70,
+        25
+      );
+
+    }
+
+    // FOOTER
+
+    pdf.setDrawColor(
+      220,
+      220,
+      220
+    );
+
+    pdf.line(
+      15,
+      280,
+      195,
+      280
+    );
+
+    pdf.setFontSize(10);
+
+    pdf.setTextColor(
+      120,
+      120,
+      120
+    );
+
+    pdf.text(
+      "Rodatherm • Rapport généré par Rodappli",
+      20,
+      287
+    );
+
+    pdf.save(
+      `intervention-${intervention.client || "client"}.pdf`
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Erreur génération PDF"
     );
 
   }
-
-  pdf.save(
-    `intervention-${intervention.client}.pdf`
-  );
 
 }

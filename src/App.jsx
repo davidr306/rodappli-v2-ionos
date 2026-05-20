@@ -5,61 +5,14 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import {
-  onAuthStateChanged,
-} from "firebase/auth";
+import Login
+from "./pages/Login";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import Interventions
+from "./pages/Interventions";
 
-import { auth } from "./firebase/firebase";
-
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Interventions from "./pages/Interventions";
-
-function PrivateRoute({ children }) {
-
-  const [user, setUser] = useState(undefined);
-
-  useEffect(() => {
-
-    const unsubscribe =
-      onAuthStateChanged(
-        auth,
-        (currentUser) => {
-
-          setUser(currentUser);
-
-        }
-      );
-
-    return () => unsubscribe();
-
-  }, []);
-
-  if (user === undefined) {
-
-    return (
-
-      <div className="min-h-screen flex items-center justify-center">
-
-        Chargement...
-
-      </div>
-
-    );
-
-  }
-
-  return user
-    ? children
-    : <Navigate to="/login" />;
-
-}
+import Dashboard
+from "./pages/Dashboard";
 
 export default function App() {
 
@@ -70,30 +23,24 @@ export default function App() {
       <Routes>
 
         <Route
-          path="/"
-          element={<Home />}
-        />
-
-        <Route
           path="/login"
           element={<Login />}
         />
 
         <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
+          path="/"
+          element={<Interventions />}
         />
 
         <Route
-          path="/interventions"
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
+        <Route
+          path="*"
           element={
-            <PrivateRoute>
-              <Interventions />
-            </PrivateRoute>
+            <Navigate to="/" />
           }
         />
 

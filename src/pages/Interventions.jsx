@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { db, storage } from "../firebase/firebase";
+import { db } from "../firebase/firebase";
 
 import {
   addDoc,
@@ -11,20 +11,14 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
-
 import SignatureCanvas from "react-signature-canvas";
 
 import Topbar from "../components/layout/Topbar";
 
-export default function Interventions() {
+import { generatePDF }
+from "../utils/generatePDF";
 
-  const fileInputRef =
-    useRef(null);
+export default function Interventions() {
 
   const signatureRef =
     useRef(null);
@@ -49,9 +43,6 @@ export default function Interventions() {
   const [dateIntervention,
     setDateIntervention] =
     useState("");
-
-  const [photo, setPhoto] =
-    useState(null);
 
   const [interventions,
     setInterventions] =
@@ -112,51 +103,6 @@ export default function Interventions() {
 
   }, []);
 
-  async function uploadPhoto() {
-
-    try {
-
-      if (!photo) {
-        return "";
-      }
-
-      const storageRef = ref(
-        storage,
-        `interventions/${Date.now()}-${photo.name}`
-      );
-
-      await uploadBytes(
-        storageRef,
-        photo
-      );
-
-      return await getDownloadURL(
-        storageRef
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-      return "";
-
-    }
-
-  }
-
-  function supprimerPhoto() {
-
-    setPhoto(null);
-
-    if (fileInputRef.current) {
-
-      fileInputRef.current.value =
-        "";
-
-    }
-
-  }
-
   function viderFormulaire() {
 
     setClient("");
@@ -165,8 +111,6 @@ export default function Interventions() {
     setTechnicien("");
     setStatut("");
     setDateIntervention("");
-
-    supprimerPhoto();
 
     setModeEdition(false);
 
@@ -189,19 +133,6 @@ export default function Interventions() {
     e.preventDefault();
 
     try {
-
-      let photoUrl = "";
-
-      try {
-
-        photoUrl =
-          await uploadPhoto();
-
-      } catch (error) {
-
-        console.error(error);
-
-      }
 
       let signatureClient = "";
 
@@ -246,9 +177,6 @@ export default function Interventions() {
 
         dateIntervention:
           dateIntervention || "",
-
-        photoUrl:
-          photoUrl || "",
 
         signatureClient:
           signatureClient || "",
@@ -462,59 +390,6 @@ export default function Interventions() {
 
         </select>
 
-        {/* PHOTO */}
-
-        <div className="mt-6">
-
-          <p className="font-semibold mb-2">
-            Photo intervention
-          </p>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-
-              const fichier =
-                e.target.files?.[0];
-
-              setPhoto(
-                fichier || null
-              );
-
-            }}
-            className="border p-3 rounded-xl w-full"
-          />
-
-          {photo && (
-
-            <div className="mt-4 bg-gray-100 rounded-xl p-4 flex items-center justify-between">
-
-              <p className="text-sm">
-
-                {photo.name}
-
-              </p>
-
-              <button
-                type="button"
-                onClick={
-                  supprimerPhoto
-                }
-                className="bg-red-600 text-white px-4 py-2 rounded-xl"
-              >
-                Supprimer
-              </button>
-
-            </div>
-
-          )}
-
-        </div>
-
-        {/* SIGNATURE */}
-
         <div className="mt-6">
 
           <p className="font-semibold mb-2">
@@ -579,8 +454,6 @@ export default function Interventions() {
         </div>
 
       </form>
-
-      {/* RECHERCHE */}
 
       <div className="bg-white p-6 rounded-2xl shadow mb-8">
 
@@ -671,16 +544,6 @@ export default function Interventions() {
               className="bg-white p-6 rounded-2xl shadow"
             >
 
-              {item.photoUrl && (
-
-                <img
-                  src={item.photoUrl}
-                  alt="intervention"
-                  className="w-full h-52 object-cover rounded-2xl mb-4"
-                />
-
-              )}
-
               <h2 className="text-2xl font-bold">
                 {item.client}
               </h2>
@@ -726,7 +589,17 @@ export default function Interventions() {
 
               )}
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex flex-wrap gap-3 mt-6">
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    generatePDF(item)
+                  }
+                  className="bg-green-600 text-white px-4 py-2 rounded-xl"
+                >
+                  PDF
+                </button>
 
                 <button
                   type="button"

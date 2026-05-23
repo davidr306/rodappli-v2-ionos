@@ -14,6 +14,9 @@ from "./pages/Interventions";
 import Dashboard
 from "./pages/Dashboard";
 
+import Planning
+from "./pages/Planning";
+
 export default function App() {
 
   return (
@@ -43,6 +46,11 @@ export default function App() {
             <Navigate to="/" />
           }
         />
+
+        <Route
+  path="/planning"
+  element={<Planning />}
+/>
 
       </Routes>
 

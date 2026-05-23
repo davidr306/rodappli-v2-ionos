@@ -50,6 +50,13 @@ export default function Topbar({
           Interventions
         </Link>
 
+        <Link
+  to="/planning"
+  className={`px-5 py-3 rounded-2xl shadow font-medium transition ${navClass("/planning")}`}
+>
+  Planning
+</Link>
+
       </div>
 
     </div>

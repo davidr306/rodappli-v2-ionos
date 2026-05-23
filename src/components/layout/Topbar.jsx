@@ -21,51 +21,32 @@ export default function Topbar({ title }) {
 
   return (
 
-    <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <div className="topbar-fix mb-8">
 
-      {/* TITRE */}
+    <h1 className="text-5xl font-bold text-black">
+      {title}
+    </h1>
 
-      <h1 className="text-5xl font-bold text-black">
+    <div className="topbar-buttons">
 
-        {title}
+      <button className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow">
+        Accueil
+      </button>
 
-      </h1>
+      <button className="bg-white px-6 py-3 rounded-2xl shadow">
+        Interventions
+      </button>
 
-      {/* MENU */}
+      <button className="bg-white px-6 py-3 rounded-2xl shadow">
+        Planning
+      </button>
 
-      <div className="flex flex-wrap items-center gap-4">
-
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow">
-
-          Accueil
-
-        </button>
-
-        <button className="bg-white px-6 py-3 rounded-2xl shadow">
-
-          Interventions
-
-        </button>
-
-        <button className="bg-white px-6 py-3 rounded-2xl shadow">
-
-          Planning
-
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white px-6 py-3 rounded-2xl shadow"
-        >
-
-          Déconnexion
-
-        </button>
-
-      </div>
+      <button className="bg-red-600 text-white px-6 py-3 rounded-2xl shadow">
+        Déconnexion
+      </button>
 
     </div>
 
-  );
+  </div>
 
-}
+);

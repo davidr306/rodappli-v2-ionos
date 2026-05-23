@@ -6,3 +6,26 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
+
+body {
+  overflow-x: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.topbar-fix {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.topbar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}

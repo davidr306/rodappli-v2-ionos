@@ -34,8 +34,7 @@ import {
   db,
 } from "../firebase/firebase";
 
-import Topbar
-from "../components/layout/Topbar";
+import Topbar from "../components/layout/Topbar";
 
 const locales = {
   fr: frFR,

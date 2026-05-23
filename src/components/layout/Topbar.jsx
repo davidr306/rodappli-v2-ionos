@@ -1,52 +1,19 @@
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/firebase";
 
-import {
-  signOut,
-} from "firebase/auth";
+export default function Topbar({ title }) {
 
-import {
-  auth,
-} from "../../firebase/firebase";
-
-export default function Topbar({
-  title,
-}) {
-
-  const location =
-    useLocation();
-
-  const navigate =
-    useNavigate();
-
-  function navClass(path) {
-
-    return location.pathname === path
-
-      ? "bg-blue-600 text-white"
-
-      : "bg-white text-gray-700";
-
-  }
-
-  async function deconnexion() {
+  async function handleLogout() {
 
     try {
 
       await signOut(auth);
 
-      navigate("/login");
+      window.location.href = "/";
 
     } catch (error) {
 
       console.error(error);
-
-      alert(
-        "Erreur déconnexion"
-      );
 
     }
 
@@ -54,46 +21,45 @@ export default function Topbar({
 
   return (
 
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+    <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
 
-      <div>
+      {/* TITRE */}
 
-        <h1 className="text-3xl md:text-4xl font-bold">
+      <h1 className="text-5xl font-bold text-black">
 
-          {title}
+        {title}
 
-        </h1>
+      </h1>
 
-      </div>
+      {/* MENU */}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-4">
 
-        <Link
-          to="/dashboard"
-          className={`px-5 py-3 rounded-2xl shadow font-medium transition ${navClass("/dashboard")}`}
-        >
+        <button className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow">
+
           Accueil
-        </Link>
 
-        <Link
-          to="/"
-          className={`px-5 py-3 rounded-2xl shadow font-medium transition ${navClass("/")}`}
-        >
+        </button>
+
+        <button className="bg-white px-6 py-3 rounded-2xl shadow">
+
           Interventions
-        </Link>
 
-        <Link
-          to="/planning"
-          className={`px-5 py-3 rounded-2xl shadow font-medium transition ${navClass("/planning")}`}
-        >
+        </button>
+
+        <button className="bg-white px-6 py-3 rounded-2xl shadow">
+
           Planning
-        </Link>
+
+        </button>
 
         <button
-          onClick={deconnexion}
-          className="bg-red-600 text-white px-5 py-3 rounded-2xl shadow font-medium"
+          onClick={handleLogout}
+          className="bg-red-600 text-white px-6 py-3 rounded-2xl shadow"
         >
+
           Déconnexion
+
         </button>
 
       </div>

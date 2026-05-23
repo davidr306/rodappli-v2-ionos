@@ -1,7 +1,16 @@
 import {
   Link,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
+
+import {
+  signOut,
+} from "firebase/auth";
+
+import {
+  auth,
+} from "../../firebase/firebase";
 
 export default function Topbar({
   title,
@@ -10,6 +19,9 @@ export default function Topbar({
   const location =
     useLocation();
 
+  const navigate =
+    useNavigate();
+
   function navClass(path) {
 
     return location.pathname === path
@@ -17,6 +29,26 @@ export default function Topbar({
       ? "bg-blue-600 text-white"
 
       : "bg-white text-gray-700";
+
+  }
+
+  async function deconnexion() {
+
+    try {
+
+      await signOut(auth);
+
+      navigate("/login");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Erreur déconnexion"
+      );
+
+    }
 
   }
 
@@ -51,11 +83,18 @@ export default function Topbar({
         </Link>
 
         <Link
-  to="/planning"
-  className={`px-5 py-3 rounded-2xl shadow font-medium transition ${navClass("/planning")}`}
->
-  Planning
-</Link>
+          to="/planning"
+          className={`px-5 py-3 rounded-2xl shadow font-medium transition ${navClass("/planning")}`}
+        >
+          Planning
+        </Link>
+
+        <button
+          onClick={deconnexion}
+          className="bg-red-600 text-white px-5 py-3 rounded-2xl shadow font-medium"
+        >
+          Déconnexion
+        </button>
 
       </div>
 

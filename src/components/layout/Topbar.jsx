@@ -93,6 +93,17 @@ export default function Topbar({ title }) {
 
         </button>
 
+        <button
+  onClick={() =>
+    navigate("/clients")
+  }
+  className={buttonClass("/clients")}
+>
+
+  Clients
+
+</button>
+
       </div>
 
     </div>

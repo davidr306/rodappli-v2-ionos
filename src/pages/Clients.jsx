@@ -7,6 +7,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 
 import {
@@ -54,6 +56,16 @@ export default function Clients() {
     setAdresse,
   ] = useState("");
 
+  const [
+    modeEdition,
+    setModeEdition,
+  ] = useState(false);
+
+  const [
+    clientId,
+    setClientId,
+  ] = useState(null);
+
   useEffect(() => {
 
     chargerClients();
@@ -99,24 +111,60 @@ export default function Clients() {
 
     try {
 
-      await addDoc(
-        collection(db, "clients"),
-        {
-          entreprise,
-          nom,
-          telephone,
-          email,
-          adresse,
-          createdAt:
-            new Date(),
-        }
-      );
+      if (modeEdition) {
+
+        await updateDoc(
+
+          doc(
+            db,
+            "clients",
+            clientId
+          ),
+
+          {
+            entreprise,
+            nom,
+            telephone,
+            email,
+            adresse,
+          }
+
+        );
+
+        alert(
+          "Client modifié"
+        );
+
+      } else {
+
+        await addDoc(
+          collection(db, "clients"),
+          {
+            entreprise,
+            nom,
+            telephone,
+            email,
+            adresse,
+            createdAt:
+              new Date(),
+          }
+        );
+
+        alert(
+          "Client ajouté"
+        );
+
+      }
 
       setEntreprise("");
       setNom("");
       setTelephone("");
       setEmail("");
       setAdresse("");
+
+      setModeEdition(false);
+
+      setClientId(null);
 
       chargerClients();
 
@@ -125,6 +173,39 @@ export default function Clients() {
       console.error(error);
 
     }
+
+  }
+
+  function modifierClient(client) {
+
+    setModeEdition(true);
+
+    setClientId(client.id);
+
+    setEntreprise(
+      client.entreprise || ""
+    );
+
+    setNom(
+      client.nom || ""
+    );
+
+    setTelephone(
+      client.telephone || ""
+    );
+
+    setEmail(
+      client.email || ""
+    );
+
+    setAdresse(
+      client.adresse || ""
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
 
   }
 
@@ -140,7 +221,9 @@ export default function Clients() {
 
         <h2 className="text-2xl font-bold mb-6">
 
-          Ajouter un client
+          {modeEdition
+            ? "Modifier un client"
+            : "Ajouter un client"}
 
         </h2>
 
@@ -166,7 +249,9 @@ export default function Clients() {
             placeholder="Nom"
             value={nom}
             onChange={(e) =>
-              setNom(e.target.value)
+              setNom(
+                e.target.value
+              )
             }
             className="p-4 rounded-2xl border"
             required
@@ -189,7 +274,9 @@ export default function Clients() {
             placeholder="Email"
             value={email}
             onChange={(e) =>
-              setEmail(e.target.value)
+              setEmail(
+                e.target.value
+              )
             }
             className="p-4 rounded-2xl border"
           />
@@ -211,7 +298,9 @@ export default function Clients() {
             className="bg-blue-600 text-white p-4 rounded-2xl shadow md:col-span-2"
           >
 
-            Ajouter le client
+            {modeEdition
+              ? "Sauvegarder"
+              : "Ajouter le client"}
 
           </button>
 
@@ -266,6 +355,22 @@ export default function Clients() {
               📍 {client.adresse}
 
             </p>
+
+            <button
+              type="button"
+              onClick={(e) => {
+
+                e.stopPropagation();
+
+                modifierClient(client);
+
+              }}
+              className="mt-5 bg-yellow-500 text-white px-4 py-3 rounded-2xl w-full"
+            >
+
+              Modifier
+
+            </button>
 
           </div>
 

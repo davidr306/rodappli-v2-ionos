@@ -13,6 +13,10 @@ import {
 } from "firebase/auth";
 
 import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
   db,
   auth,
 } from "../firebase/firebase";
@@ -28,6 +32,9 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
+
+  const navigate =
+    useNavigate();
 
   const [
     interventions,
@@ -79,7 +86,7 @@ export default function Dashboard() {
 
       await signOut(auth);
 
-      window.location.href = "/";
+      navigate("/login");
 
     } catch (error) {
 
@@ -187,19 +194,28 @@ export default function Dashboard() {
 
         <div className="flex flex-wrap gap-4">
 
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow"
+          >
 
             Accueil
 
           </button>
 
-          <button className="bg-white px-6 py-3 rounded-2xl shadow">
+          <button
+            onClick={() => navigate("/interventions")}
+            className="bg-white px-6 py-3 rounded-2xl shadow"
+          >
 
             Interventions
 
           </button>
 
-          <button className="bg-white px-6 py-3 rounded-2xl shadow">
+          <button
+            onClick={() => navigate("/planning")}
+            className="bg-white px-6 py-3 rounded-2xl shadow"
+          >
 
             Planning
 

@@ -316,10 +316,7 @@ export default function Clients() {
 
           <div
             key={client.id}
-            onClick={() =>
-              navigate(`/clients/${client.id}`)
-            }
-            className="bg-white rounded-3xl shadow-lg p-6 cursor-pointer hover:scale-105 transition"
+            className="bg-white rounded-3xl shadow-lg p-6"
           >
 
             {client.entreprise && (
@@ -332,7 +329,12 @@ export default function Clients() {
 
             )}
 
-            <h2 className="text-2xl font-bold mb-3">
+            <h2
+              onClick={() =>
+                navigate(`/clients/${client.id}`)
+              }
+              className="text-2xl font-bold mb-3 cursor-pointer"
+            >
 
               {client.nom}
 
@@ -358,13 +360,9 @@ export default function Clients() {
 
             <button
               type="button"
-              onClick={(e) => {
-
-                e.stopPropagation();
-
-                modifierClient(client);
-
-              }}
+              onClick={() =>
+                modifierClient(client)
+              }
               className="mt-5 bg-yellow-500 text-white px-4 py-3 rounded-2xl w-full"
             >
 

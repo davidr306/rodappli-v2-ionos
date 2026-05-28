@@ -1,7 +1,10 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function Topbar({ title }) {
+
+  const navigate = useNavigate();
 
   async function handleLogout() {
 
@@ -9,7 +12,7 @@ export default function Topbar({ title }) {
 
       await signOut(auth);
 
-      window.location.href = "/";
+      navigate("/");
 
     } catch (error) {
 
@@ -31,19 +34,28 @@ export default function Topbar({ title }) {
 
       <div className="flex flex-wrap gap-4">
 
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow"
+        >
 
           Accueil
 
         </button>
 
-        <button className="bg-white px-6 py-3 rounded-2xl shadow">
+        <button
+          onClick={() => navigate("/interventions")}
+          className="bg-white px-6 py-3 rounded-2xl shadow"
+        >
 
           Interventions
 
         </button>
 
-        <button className="bg-white px-6 py-3 rounded-2xl shadow">
+        <button
+          onClick={() => navigate("/planning")}
+          className="bg-white px-6 py-3 rounded-2xl shadow"
+        >
 
           Planning
 

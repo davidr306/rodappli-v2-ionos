@@ -41,7 +41,7 @@ export default function Topbar({ title }) {
 
   return (
 
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+    <<div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-8">
 
       <h1 className="text-4xl md:text-5xl font-bold text-black">
 
@@ -49,7 +49,7 @@ export default function Topbar({ title }) {
 
       </h1>
 
-      <div className="flex flex-wrap gap-2 justify-end w-full md:w-auto">
+      <div className="flex flex-wrap items-center justify-end gap-2 w-full md:w-auto max-w-full overflow-x-auto">
 
         <button
           onClick={() =>

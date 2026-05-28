@@ -21,14 +21,14 @@ import Topbar from "../components/layout/Topbar";
 
 export default function Clients() {
 
+  const navigate =
+    useNavigate();
+
   const [
     clients,
     setClients,
   ] = useState([]);
 
-  const navigate =
-  useNavigate();
-  
   const [
     nom,
     setNom,
@@ -202,13 +202,13 @@ export default function Clients() {
 
         {clients.map((client) => (
 
-         <div
-  key={client.id}
-  onClick={() =>
-    navigate(`/clients/${client.id}`)
-  }
-            className="bg-white rounded-3xl shadow-lg p-6"
-          >cursor-pointer hover:scale-105 transition
+          <div
+            key={client.id}
+            onClick={() =>
+              navigate(`/clients/${client.id}`)
+            }
+            className="bg-white rounded-3xl shadow-lg p-6 cursor-pointer hover:scale-105 transition"
+          >
 
             <h2 className="text-2xl font-bold mb-3">
 

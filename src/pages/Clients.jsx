@@ -10,6 +10,10 @@ import {
 } from "firebase/firestore";
 
 import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
   db,
 } from "../firebase/firebase";
 
@@ -22,6 +26,9 @@ export default function Clients() {
     setClients,
   ] = useState([]);
 
+  const navigate =
+  useNavigate();
+  
   const [
     nom,
     setNom,
@@ -195,10 +202,13 @@ export default function Clients() {
 
         {clients.map((client) => (
 
-          <div
-            key={client.id}
+         <div
+  key={client.id}
+  onClick={() =>
+    navigate(`/clients/${client.id}`)
+  }
             className="bg-white rounded-3xl shadow-lg p-6"
-          >
+          >cursor-pointer hover:scale-105 transition
 
             <h2 className="text-2xl font-bold mb-3">
 

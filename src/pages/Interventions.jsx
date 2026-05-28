@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { db } from "../firebase/firebase";
 
@@ -15,54 +19,113 @@ import SignatureCanvas from "react-signature-canvas";
 
 import Topbar from "../components/layout/Topbar";
 
-import { generatePDF }
-from "../utils/generatePDF";
+import { generatePDF } from "../utils/generatePDF";
 
 export default function Interventions() {
 
   const signatureRef =
     useRef(null);
 
-  const [client, setClient] =
-    useState("");
+  const [
+    clients,
+    setClients,
+  ] = useState([]);
 
-  const [adresse, setAdresse] =
-    useState("");
+  const [
+    client,
+    setClient,
+  ] = useState("");
 
-  const [travaux, setTravaux] =
-    useState("");
+  const [
+    adresse,
+    setAdresse,
+  ] = useState("");
 
-  const [technicien,
-    setTechnicien] =
-    useState("");
+  const [
+    travaux,
+    setTravaux,
+  ] = useState("");
 
-  const [statut,
-    setStatut] =
-    useState("");
+  const [
+    technicien,
+    setTechnicien,
+  ] = useState("");
 
-  const [dateIntervention,
-    setDateIntervention] =
-    useState("");
+  const [
+    statut,
+    setStatut,
+  ] = useState("");
 
-  const [interventions,
-    setInterventions] =
-    useState([]);
+  const [
+    dateIntervention,
+    setDateIntervention,
+  ] = useState("");
 
-  const [modeEdition,
-    setModeEdition] =
-    useState(false);
+  const [
+    interventions,
+    setInterventions,
+  ] = useState([]);
 
-  const [interventionId,
-    setInterventionId] =
-    useState(null);
+  const [
+    modeEdition,
+    setModeEdition,
+  ] = useState(false);
 
-  const [recherche,
-    setRecherche] =
-    useState("");
+  const [
+    interventionId,
+    setInterventionId,
+  ] = useState(null);
 
-  const [filtreStatut,
-    setFiltreStatut] =
-    useState("");
+  const [
+    recherche,
+    setRecherche,
+  ] = useState("");
+
+  const [
+    filtreStatut,
+    setFiltreStatut,
+  ] = useState("");
+
+  useEffect(() => {
+
+    chargerInterventions();
+
+    chargerClients();
+
+  }, []);
+
+  async function chargerClients() {
+
+    try {
+
+      const querySnapshot =
+        await getDocs(
+          collection(
+            db,
+            "clients"
+          )
+        );
+
+      const liste = [];
+
+      querySnapshot.forEach((docItem) => {
+
+        liste.push({
+          id: docItem.id,
+          ...docItem.data(),
+        });
+
+      });
+
+      setClients(liste);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  }
 
   async function chargerInterventions() {
 
@@ -96,12 +159,6 @@ export default function Interventions() {
     }
 
   }
-
-  useEffect(() => {
-
-    chargerInterventions();
-
-  }, []);
 
   function viderFormulaire() {
 
@@ -287,9 +344,7 @@ export default function Interventions() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <input
-            type="text"
-            placeholder="Client"
+          <select
             value={client}
             onChange={(e) =>
               setClient(
@@ -297,7 +352,26 @@ export default function Interventions() {
               )
             }
             className="border p-4 rounded-2xl text-base"
-          />
+          >
+
+            <option value="">
+              Sélectionner un client
+            </option>
+
+            {clients.map((clientItem) => (
+
+              <option
+                key={clientItem.id}
+                value={clientItem.nom}
+              >
+
+                {clientItem.nom}
+
+              </option>
+
+            ))}
+
+          </select>
 
           <input
             type="text"
@@ -435,208 +509,6 @@ export default function Interventions() {
         </div>
 
       </form>
-
-      {/* RECHERCHE */}
-
-      <div className="bg-white rounded-3xl shadow-lg p-4 md:p-6 mb-6">
-
-        <h2 className="text-2xl font-bold mb-5">
-
-          Recherche
-
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          <input
-            type="text"
-            placeholder="Rechercher client ou adresse"
-            value={recherche}
-            onChange={(e) =>
-              setRecherche(
-                e.target.value
-              )
-            }
-            className="border p-4 rounded-2xl"
-          />
-
-          <select
-            value={filtreStatut}
-            onChange={(e) =>
-              setFiltreStatut(
-                e.target.value
-              )
-            }
-            className="border p-4 rounded-2xl"
-          >
-
-            <option value="">
-              Tous les statuts
-            </option>
-
-            <option value="En cours">
-              En cours
-            </option>
-
-            <option value="Terminée">
-              Terminée
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-      {/* CARTES */}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-
-        {interventions
-
-          .filter((item) => {
-
-            const matchRecherche =
-
-              item.client
-                ?.toLowerCase()
-                .includes(
-                  recherche.toLowerCase()
-                ) ||
-
-              item.adresse
-                ?.toLowerCase()
-                .includes(
-                  recherche.toLowerCase()
-                );
-
-            const matchStatut =
-
-              filtreStatut === "" ||
-
-              item.statut ===
-                filtreStatut;
-
-            return (
-              matchRecherche &&
-              matchStatut
-            );
-
-          })
-
-          .map((item) => (
-
-            <div
-              key={item.id}
-              className="bg-white rounded-3xl shadow-lg p-5"
-            >
-
-              <h2 className="text-2xl font-bold break-words">
-
-                {item.client}
-
-              </h2>
-
-              <p className="text-gray-500 mt-2 break-words">
-
-                {item.adresse}
-
-              </p>
-
-              <div className="mt-5 space-y-2 text-sm md:text-base">
-
-                <p>
-                  <strong>
-                    Technicien :
-                  </strong>{" "}
-                  {item.technicien}
-                </p>
-
-                <p>
-                  <strong>
-                    Date :
-                  </strong>{" "}
-                  {item.dateIntervention}
-                </p>
-
-                <p>
-                  <strong>
-                    Statut :
-                  </strong>{" "}
-                  {item.statut}
-                </p>
-
-              </div>
-
-              <p className="mt-5 whitespace-pre-wrap text-sm md:text-base">
-
-                {item.travaux}
-
-              </p>
-
-              {item.signatureClient && (
-
-                <div className="mt-5">
-
-                  <p className="font-semibold mb-2">
-
-                    Signature client
-
-                  </p>
-
-                  <img
-                    src={item.signatureClient}
-                    alt="signature"
-                    className="border rounded-2xl bg-white w-full"
-                  />
-
-                </div>
-
-              )}
-
-              <div className="flex flex-col md:flex-row gap-3 mt-6">
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    generatePDF(item)
-                  }
-                  className="bg-green-600 text-white px-4 py-3 rounded-2xl w-full"
-                >
-                  PDF
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    modifierIntervention(
-                      item
-                    )
-                  }
-                  className="bg-yellow-500 text-white px-4 py-3 rounded-2xl w-full"
-                >
-                  Modifier
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    supprimerIntervention(
-                      item.id
-                    )
-                  }
-                  className="bg-red-600 text-white px-4 py-3 rounded-2xl w-full"
-                >
-                  Supprimer
-                </button>
-
-              </div>
-
-            </div>
-
-          ))}
-
-      </div>
 
     </div>
 

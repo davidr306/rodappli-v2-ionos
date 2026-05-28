@@ -1,10 +1,11 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Topbar({ title }) {
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function handleLogout() {
 
@@ -12,13 +13,21 @@ export default function Topbar({ title }) {
 
       await signOut(auth);
 
-      navigate("/");
+      navigate("/login");
 
     } catch (error) {
 
       console.error(error);
 
     }
+
+  }
+
+  function buttonClass(path) {
+
+    return location.pathname === path
+      ? "bg-blue-600 text-white px-6 py-3 rounded-2xl shadow"
+      : "bg-white px-6 py-3 rounded-2xl shadow";
 
   }
 
@@ -36,7 +45,7 @@ export default function Topbar({ title }) {
 
         <button
           onClick={() => navigate("/dashboard")}
-          className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow"
+          className={buttonClass("/dashboard")}
         >
 
           Accueil
@@ -45,7 +54,7 @@ export default function Topbar({ title }) {
 
         <button
           onClick={() => navigate("/interventions")}
-          className="bg-white px-6 py-3 rounded-2xl shadow"
+          className={buttonClass("/interventions")}
         >
 
           Interventions
@@ -54,7 +63,7 @@ export default function Topbar({ title }) {
 
         <button
           onClick={() => navigate("/planning")}
-          className="bg-white px-6 py-3 rounded-2xl shadow"
+          className={buttonClass("/planning")}
         >
 
           Planning

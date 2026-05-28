@@ -30,6 +30,11 @@ export default function Clients() {
   ] = useState([]);
 
   const [
+    entreprise,
+    setEntreprise,
+  ] = useState("");
+
+  const [
     nom,
     setNom,
   ] = useState("");
@@ -97,6 +102,7 @@ export default function Clients() {
       await addDoc(
         collection(db, "clients"),
         {
+          entreprise,
           nom,
           telephone,
           email,
@@ -106,6 +112,7 @@ export default function Clients() {
         }
       );
 
+      setEntreprise("");
       setNom("");
       setTelephone("");
       setEmail("");
@@ -144,6 +151,18 @@ export default function Clients() {
 
           <input
             type="text"
+            placeholder="Entreprise"
+            value={entreprise}
+            onChange={(e) =>
+              setEntreprise(
+                e.target.value
+              )
+            }
+            className="p-4 rounded-2xl border"
+          />
+
+          <input
+            type="text"
             placeholder="Nom"
             value={nom}
             onChange={(e) =>
@@ -158,7 +177,9 @@ export default function Clients() {
             placeholder="Téléphone"
             value={telephone}
             onChange={(e) =>
-              setTelephone(e.target.value)
+              setTelephone(
+                e.target.value
+              )
             }
             className="p-4 rounded-2xl border"
           />
@@ -178,9 +199,11 @@ export default function Clients() {
             placeholder="Adresse"
             value={adresse}
             onChange={(e) =>
-              setAdresse(e.target.value)
+              setAdresse(
+                e.target.value
+              )
             }
-            className="p-4 rounded-2xl border"
+            className="p-4 rounded-2xl border md:col-span-2"
           />
 
           <button
@@ -209,6 +232,16 @@ export default function Clients() {
             }
             className="bg-white rounded-3xl shadow-lg p-6 cursor-pointer hover:scale-105 transition"
           >
+
+            {client.entreprise && (
+
+              <p className="text-blue-600 font-semibold mb-2">
+
+                {client.entreprise}
+
+              </p>
+
+            )}
 
             <h2 className="text-2xl font-bold mb-3">
 

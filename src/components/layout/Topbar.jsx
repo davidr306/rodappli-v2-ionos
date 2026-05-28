@@ -1,11 +1,19 @@
 import { signOut } from "firebase/auth";
+
 import { auth } from "../../firebase/firebase";
-import { useNavigate, useLocation } from "react-router-dom";
+
+import {
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 export default function Topbar({ title }) {
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate =
+    useNavigate();
+
+  const location =
+    useLocation();
 
   async function handleLogout() {
 
@@ -26,25 +34,27 @@ export default function Topbar({ title }) {
   function buttonClass(path) {
 
     return location.pathname === path
-      ? "bg-blue-600 text-white px-6 py-3 rounded-2xl shadow"
-      : "bg-white px-6 py-3 rounded-2xl shadow";
+      ? "bg-blue-600 text-white px-4 md:px-6 py-3 rounded-2xl shadow whitespace-nowrap"
+      : "bg-white text-black px-4 md:px-6 py-3 rounded-2xl shadow whitespace-nowrap";
 
   }
 
   return (
 
-    <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
 
-      <h1 className="text-5xl font-bold text-black">
+      <h1 className="text-4xl md:text-5xl font-bold text-black">
 
         {title}
 
       </h1>
 
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-2 justify-end w-full md:w-auto">
 
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() =>
+            navigate("/dashboard")
+          }
           className={buttonClass("/dashboard")}
         >
 
@@ -53,7 +63,9 @@ export default function Topbar({ title }) {
         </button>
 
         <button
-          onClick={() => navigate("/interventions")}
+          onClick={() =>
+            navigate("/interventions")
+          }
           className={buttonClass("/interventions")}
         >
 
@@ -62,7 +74,9 @@ export default function Topbar({ title }) {
         </button>
 
         <button
-          onClick={() => navigate("/planning")}
+          onClick={() =>
+            navigate("/planning")
+          }
           className={buttonClass("/planning")}
         >
 
@@ -72,7 +86,7 @@ export default function Topbar({ title }) {
 
         <button
           onClick={handleLogout}
-          className="bg-red-600 text-white px-6 py-3 rounded-2xl shadow"
+          className="bg-red-600 text-white px-4 md:px-6 py-3 rounded-2xl shadow whitespace-nowrap"
         >
 
           Déconnexion

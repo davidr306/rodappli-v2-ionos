@@ -157,9 +157,7 @@ export default function Dashboard() {
 
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
 
-      <Topbar title="Dashboard" />
-
-      {/* CARDS */}
+     <Topbar title="Dashboard" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 

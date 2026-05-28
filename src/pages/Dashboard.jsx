@@ -9,17 +9,11 @@ import {
 } from "firebase/firestore";
 
 import {
-  signOut,
-} from "firebase/auth";
-
-import {
-  useNavigate,
-} from "react-router-dom";
-
-import {
   db,
-  auth,
 } from "../firebase/firebase";
+
+import Topbar
+from "../components/layout/Topbar";
 
 import {
   ResponsiveContainer,
@@ -32,9 +26,6 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
-
-  const navigate =
-    useNavigate();
 
   const [
     interventions,
@@ -71,22 +62,6 @@ export default function Dashboard() {
       });
 
       setInterventions(liste);
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  }
-
-  async function handleLogout() {
-
-    try {
-
-      await signOut(auth);
-
-      navigate("/login");
 
     } catch (error) {
 
@@ -182,57 +157,7 @@ export default function Dashboard() {
 
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
 
-      {/* TOPBAR */}
-
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-
-        <h1 className="text-5xl font-bold text-black">
-
-          Dashboard
-
-        </h1>
-
-        <div className="flex flex-wrap gap-4">
-
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="bg-blue-600 text-white px-6 py-3 rounded-2xl shadow"
-          >
-
-            Accueil
-
-          </button>
-
-          <button
-            onClick={() => navigate("/interventions")}
-            className="bg-white px-6 py-3 rounded-2xl shadow"
-          >
-
-            Interventions
-
-          </button>
-
-          <button
-            onClick={() => navigate("/planning")}
-            className="bg-white px-6 py-3 rounded-2xl shadow"
-          >
-
-            Planning
-
-          </button>
-
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 text-white px-6 py-3 rounded-2xl shadow"
-          >
-
-            Déconnexion
-
-          </button>
-
-        </div>
-
-      </div>
+      <Topbar title="Dashboard" />
 
       {/* CARDS */}
 

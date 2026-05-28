@@ -34,22 +34,22 @@ export default function Topbar({ title }) {
   function buttonClass(path) {
 
     return location.pathname === path
-      ? "bg-blue-600 text-white px-3 py-2 text-sm rounded-2xl shadow whitespace-nowrap"
-      : "bg-white text-black px-3 py-2 text-sm rounded-2xl shadow whitespace-nowrap";
+      ? "bg-blue-600 text-white py-2 rounded-xl shadow text-sm w-full"
+      : "bg-white text-black py-2 rounded-xl shadow text-sm w-full";
 
   }
 
   return (
 
-    <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-8">
+    <div className="mb-8">
 
-      <h1 className="text-4xl md:text-5xl font-bold text-black">
+      <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
 
         {title}
 
       </h1>
 
-      <div className="flex flex-wrap items-center justify-end gap-2 w-full xl:w-auto max-w-full overflow-x-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
 
         <button
           onClick={() =>
@@ -86,7 +86,7 @@ export default function Topbar({ title }) {
 
         <button
           onClick={handleLogout}
-          className="bg-red-600 text-white px-3 py-2 text-sm rounded-2xl shadow whitespace-nowrap"
+          className="bg-red-600 text-white py-2 rounded-xl shadow text-sm w-full"
         >
 
           Déconnexion

@@ -12,8 +12,7 @@ import {
   db,
 } from "../firebase/firebase";
 
-import Topbar
-from "../components/layout/Topbar";
+import Topbar from "../components/layout/Topbar";
 
 import {
   ResponsiveContainer,
@@ -157,7 +156,9 @@ export default function Dashboard() {
 
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
 
-     <Topbar title="Dashboard" />
+      <Topbar title="Dashboard" />
+
+      {/* CARDS */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 

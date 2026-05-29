@@ -6,6 +6,8 @@ import {
 import {
   doc,
   getDoc,
+  collection,
+  getDocs,
 } from "firebase/firestore";
 
 import {
@@ -28,11 +30,16 @@ export default function ClientDetail() {
     setClient,
   ] = useState(null);
 
+  const [
+    interventions,
+    setInterventions,
+  ] = useState([]);
+
   useEffect(() => {
 
     chargerClient();
 
-  }, []);
+  }, [id]);
 
   async function chargerClient() {
 
@@ -52,13 +59,69 @@ export default function ClientDetail() {
         snapshot.exists()
       ) {
 
-        setClient({
+        const clientData = {
           id:
             snapshot.id,
           ...snapshot.data(),
-        });
+        };
+
+        setClient(
+          clientData
+        );
+
+        await chargerInterventions(
+          clientData.nom
+        );
 
       }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  }
+
+  async function chargerInterventions(
+    nomClient
+  ) {
+
+    try {
+
+      const querySnapshot =
+        await getDocs(
+          collection(
+            db,
+            "interventions"
+          )
+        );
+
+      const liste = [];
+
+      querySnapshot.forEach((docItem) => {
+
+        const data =
+          docItem.data();
+
+        if (
+          data.client ===
+          nomClient
+        ) {
+
+          liste.push({
+            id:
+              docItem.id,
+            ...data,
+          });
+
+        }
+
+      });
+
+      setInterventions(
+        liste
+      );
 
     } catch (error) {
 
@@ -88,7 +151,19 @@ export default function ClientDetail() {
 
       <Topbar title="Fiche Client" />
 
+      {/* INFOS CLIENT */}
+
       <div className="bg-white rounded-3xl shadow-lg p-8">
+
+        {client.entreprise && (
+
+          <p className="text-blue-600 font-semibold text-lg mb-3">
+
+            {client.entreprise}
+
+          </p>
+
+        )}
 
         <h1 className="text-4xl font-bold mb-6">
 
@@ -117,6 +192,74 @@ export default function ClientDetail() {
           </p>
 
         </div>
+
+      </div>
+
+      {/* HISTORIQUE */}
+
+      <div className="bg-white rounded-3xl shadow-lg p-8 mt-6">
+
+        <h2 className="text-2xl font-bold mb-6">
+
+          Historique interventions
+          ({interventions.length})
+
+        </h2>
+
+        {interventions.length === 0 ? (
+
+          <p className="text-gray-500">
+
+            Aucune intervention
+
+          </p>
+
+        ) : (
+
+          <div className="space-y-4">
+
+            {interventions.map((item) => (
+
+              <div
+                key={item.id}
+                className="border rounded-2xl p-4"
+              >
+
+                <p>
+
+                  <strong>Date :</strong>{" "}
+                  {item.dateIntervention}
+
+                </p>
+
+                <p>
+
+                  <strong>Technicien :</strong>{" "}
+                  {item.technicien}
+
+                </p>
+
+                <p>
+
+                  <strong>Statut :</strong>{" "}
+                  {item.statut}
+
+                </p>
+
+                <p className="mt-2">
+
+                  <strong>Travaux :</strong>{" "}
+                  {item.travaux}
+
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
 
       </div>
 
